@@ -11,7 +11,7 @@ context("Tests for feature-count manipulating functions")
 
 test_that("feature_counts_to_dgelist: invalid input", {
   fcounts_df1 <- .df(Geneid = letters[1:3], Length = 1:3, id1 = 11:13)
-  samp.df1 <- .df(id = paste0("id", 1:3))
+  samp_df1 <- .df(id = paste0("id", 1:3))
 
   # fcounts_df should be:
   # - a non-empty data.frame
@@ -21,7 +21,7 @@ test_that("feature_counts_to_dgelist: invalid input", {
   expect_error(
     object = feature_counts_to_dgelist(
       fcounts_df = .df(),
-      sample_df = samp.df1,
+      sample_df = samp_df1,
       id_column = "id"
     ),
     info = "fcounts_df should be a non-empty data.frame"
@@ -29,7 +29,7 @@ test_that("feature_counts_to_dgelist: invalid input", {
   expect_error(
     object = feature_counts_to_dgelist(
       fcounts_df = .df(Length = 1:10, id1 = 11:20),
-      sample_df = samp.df1,
+      sample_df = samp_df1,
       id_column = "id"
     ),
     info = "fcounts_df should have Geneid as first column"
@@ -37,7 +37,7 @@ test_that("feature_counts_to_dgelist: invalid input", {
   expect_error(
     object = feature_counts_to_dgelist(
       fcounts_df = .df(Geneid = letters[1:10], id1 = 11:20),
-      sample_df = samp.df1,
+      sample_df = samp_df1,
       id_column = "id"
     ),
     info = "fcounts_df should have Length as second column"
@@ -49,7 +49,7 @@ test_that("feature_counts_to_dgelist: invalid input", {
         Length = letters[1:10],
         id1 = 11:20
       ),
-      sample_df = samp.df1,
+      sample_df = samp_df1,
       id_column = "id"
     ),
     info = "fcounts_df::Length should be numerical"
@@ -57,7 +57,7 @@ test_that("feature_counts_to_dgelist: invalid input", {
   expect_error(
     object = feature_counts_to_dgelist(
       fcounts_df = .df(Geneid = letters[1:10], Length = 1:10),
-      sample_df = samp.df1,
+      sample_df = samp_df1,
       id_column = "id"
     ),
     info = "Should be at least one column of counts in fcounts_df"
@@ -70,7 +70,7 @@ test_that("feature_counts_to_dgelist: invalid input", {
         Length = 1:10,
         id1 = c("NOT", "A", "COUNT")
       ),
-      sample_df = samp.df1,
+      sample_df = samp_df1,
       id_column = "id"
     ),
     info = "All columns other than Geneid and Length should be counts"
@@ -157,7 +157,7 @@ test_that("feature_counts_to_dgelist: valid input", {
     id2 = 20:22,
     id3 = 31:33
   )
-  samp.df1 <- .df(id = paste0("id", 1:3))
+  samp_df1 <- .df(id = paste0("id", 1:3))
 
   object <- feature_counts_to_dgelist(
     fcounts_df = fcounts_df1,
@@ -195,7 +195,7 @@ test_that("feature_counts_to_dgelist: valid input", {
         nrow = 3,
         dimnames = list(letters[1:3], paste0("id", 1:3))
       ),
-      samples = magrittr::set_rownames(samp.df1, samp.df1$id),
+      samples = magrittr::set_rownames(samp_df1, samp_df1$id),
       genes = .df(
         row.names = letters[1:3],
         Geneid = letters[1:3],
