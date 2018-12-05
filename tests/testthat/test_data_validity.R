@@ -4,18 +4,57 @@ context("Tests for data-validity functions in `reeq`")
 
 ###############################################################################
 
-test_that(".is_single_string - helper function", {
+test_that("is_single_string - helper function", {
   expect_true(
-    object = .is_single_string("abc"),
+    object = is_single_string("abc"),
     info = "a single string"
   )
   expect_false(
-    object = .is_single_string(1),
+    object = is_single_string(1),
     info = "a number, not a string"
   )
   expect_false(
-    object = .is_single_string(c("abc", "def")),
+    object = is_single_string(c("abc", "def")),
     info = "more than one string"
+  )
+})
+
+###############################################################################
+
+test_that("is_nonempty_df", {
+  expect_error(
+    is_nonempty_df(),
+    info = "no input to is_nonempty_df"
+  )
+
+  expect_equal(
+    object = is_nonempty_df("Not a data.frame"),
+    expected = FALSE,
+    info = "String input to is_nonempty_df"
+  )
+
+  expect_equal(
+    object = is_nonempty_df(data.frame()),
+    expected = FALSE,
+    info = "data.frrame with no cols and no rows is empty"
+  )
+
+  expect_equal(
+    object = is_nonempty_df(data.frame(a = character(0))),
+    expected = FALSE,
+    info = "data.frame with no rows is empty"
+  )
+
+  expect_equal(
+    object = is_nonempty_df(data.frame(row.names = letters[1:2])),
+    expected = FALSE,
+    info = "data.frame with no cols is empty"
+  )
+
+  expect_equal(
+    object = is_nonempty_df(data.frame(a = 1:3)),
+    expected = TRUE,
+    info = "data.frame with some entries is nonempty"
   )
 })
 
