@@ -16,4 +16,6 @@ Suggests: testthat,
     covr,
     dplyr
 Imports: magrittr,
-    edgeR
+    edgeR,
+    Biobase,
+    methods
