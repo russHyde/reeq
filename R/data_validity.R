@@ -27,6 +27,21 @@ is_nonempty_df <- function(.x) {
     ncol(.x) > 0
 }
 
+#' is_nonempty_list - checks if an R object is a list and is non-empty
+#'
+#' @param        .x            Any R object
+#' @return       Boolean: is .x a non-empty list?
+#'
+#' @noRd
+
+is_nonempty_list <- function(.x) {
+  if (missing(.x)) {
+    stop(".x should be defined in is_nonempty_list")
+  }
+  is.list(.x) &&
+    length(.x) > 0
+}
+
 ###############################################################################
 
 #' - `fcounts_df` should have first two cols "Geneid" and "Length".

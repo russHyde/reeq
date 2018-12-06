@@ -59,3 +59,42 @@ test_that("is_nonempty_df", {
 })
 
 ###############################################################################
+
+test_that("is_nonempty_list", {
+  expect_error(
+    object = is_nonempty_list(),
+    info = "no input to is_nonempty_list"
+  )
+
+  expect_equal(
+    object = is_nonempty_list("Not a list"),
+    expected = FALSE,
+    info = "Non-list input to is_nonempty_list"
+  )
+
+  expect_equal(
+    object = is_nonempty_list(list()),
+    expected = FALSE,
+    info = "Empty list input to is_nonempty_list"
+  )
+
+  expect_equal(
+    object = is_nonempty_list(list(1, 2, 3)),
+    expected = TRUE,
+    info = "Unnamed list with 3 entries"
+  )
+
+  expect_true(
+    object = is_nonempty_list(list(NULL)),
+    info = ".x is a list of NULL in input to is_nonempty_list"
+  )
+
+  expect_equal(
+    object = is_nonempty_list(data.frame(a = 1:3)),
+    expected = TRUE,
+    info = "data.frames are lists, so should be valid input to
+is_nonempty_list"
+  )
+})
+
+###############################################################################

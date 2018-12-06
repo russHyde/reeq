@@ -206,3 +206,185 @@ test_that("feature_counts_to_dgelist: valid input", {
 })
 
 ###############################################################################
+
+test_that("cbind_feature_counts", {
+
+  # - Input should be a list of data.frames, each containing three columns
+  # (Geneid, Length, <count.column>) in that order
+  # - count.column may or may not have a sample-specific id as header
+  # - and the user may want to rename the cols anyway (eg, if they are
+  # long-winded filenames)
+
+  # Invalid input
+  # - Missing input
+  expect_error(
+    object = cbind_feature_counts(),
+    info = "Missing input to cbind_feature_counts"
+  )
+  # - Not a list
+  expect_error(
+    object = cbind_feature_counts("Not a list"),
+    info = "Input to cbind_feature_counts should be a list"
+  )
+  # - An empty list
+  expect_error(
+    object = cbind_feature_counts(list()),
+    info = "Empty list input to cbind_feature_counts"
+  )
+  # - A list with non-data.frame contents
+  expect_error(
+    object = cbind_feature_counts(list("Not a data.frame")),
+    info = "Input should be a list of data.frames"
+  )
+  # - A list with data.frames that don't have Geneid column
+  expect_error(
+    object = cbind_feature_counts(list(.df(
+      A = 1,
+      Length = 2,
+      Count = 3
+    ))),
+    info = "1st column should be 'Geneid' in each data.frame"
+  )
+  # - A list with data.frames that don't have Length column
+  expect_error(
+    object = cbind_feature_counts(list(.df(
+      Geneid = 1,
+      B = 2,
+      Count = 3
+    ))),
+    info = "2nd column should be 'Length' in each data.frame"
+  )
+  # - A list with data.frames that don't have counts column (too few columns)
+  expect_error(
+    object = cbind_feature_counts(list(.df(
+      Geneid = 1,
+      Length = 2
+    ))),
+    info = "Missing count column - too few columns"
+  )
+  # - A list with data.frames that don't have counts column (non-numeric col)
+  expect_error(
+    object = cbind_feature_counts(list(.df(
+      Geneid = 1,
+      Length = 2,
+      not.county = "A"
+    ))),
+    info = "Missing count column - non-numeric column"
+  )
+  # - A list with data.frames that have more than three cols
+  expect_error(
+    object = cbind_feature_counts(list(.df(
+      Geneid = 1,
+      Length = 2,
+      county = 123,
+      extra = "ABC"
+    ))),
+    info = "Too many columns in input"
+  )
+  # - names_as_colnames = TRUE, but no names in the input list
+  expect_error(
+    object = cbind_feature_counts(
+      list(.df(
+        Geneid = 1,
+        Length = 2,
+        count.col = 345
+      )),
+      names_as_colnames = TRUE
+    ),
+    info = "If names_as_colnames = TRUE, there should be names in the
+count_list"
+  )
+
+  # Valid input
+  # - Function uses `merge` semantics over the Geneid and Length
+  # so there doesn't need to be exactly the same features in each input
+  # data.frame
+  # - names_as_colnames determines what the column names should be in the
+  # output
+
+  # Single data.frame input
+  X <- .df(
+    Geneid = c(1, 2, 3),
+    Length = c(10, 30, 30),
+    count.col = c(123, 234, 345)
+  )
+  expect_equal(
+    object = cbind_feature_counts(
+      list(X),
+      names_as_colnames = FALSE
+    ),
+    expected = X,
+    info = "Single data.frame input, names_as_colnames = FALSE"
+  )
+  expect_equal(
+    object = cbind_feature_counts(
+      list(a = X),
+      names_as_colnames = TRUE
+    ),
+    expected = setNames(X, c("Geneid", "Length", "a")),
+    info = "Single data.frame input, names_as_colnames = TRUE"
+  )
+
+  # Two data.frames, same features
+  X <- .df(
+    Geneid = c(1, 2),
+    Length = c(10, 30),
+    count.col1 = c(123, 234)
+  )
+  Y <- .df(
+    Geneid = c(1, 2),
+    Length = c(10, 30),
+    count.col2 = c(111, 222)
+  )
+  expect_equal(
+    object = cbind_feature_counts(
+      list(X, Y),
+      names_as_colnames = FALSE
+    ),
+    expected = .df(
+      Geneid = c(1, 2),
+      Length = c(10, 30),
+      count.col1 = c(123, 234),
+      count.col2 = c(111, 222)
+    ),
+    info = "Two data.frame input with names.as.conames = FALSE"
+  )
+
+  # Two data.frames, names_as_colnames, count.colname is the same in input
+  expect_equal(
+    object = cbind_feature_counts(
+      Map(
+        function(DF) {
+          setNames(DF, c("Geneid", "Length", "count"))
+        },
+        list(a = X, b = Y)
+      ),
+      names_as_colnames = TRUE
+    ),
+    expected = .df(
+      Geneid = c(1, 2),
+      Length = c(10, 30),
+      a = c(123, 234),
+      b = c(111, 222)
+    ),
+    info = "Two data.frames, names_as_colnames = TRUE, same count colname"
+  )
+
+  # read_tsv returns a tbl_df
+  # But, if T is a tbl_df, and the third column stores a numeric entry,
+  #   then is.numeric(T[, 3]) is FALSE
+  X <- dplyr::tbl_df(
+    .df(Geneid = c(1, 2), Length = c(2, 3), count.col = c(10, 20))
+  )
+  expect_equal(
+    object = cbind_feature_counts(list(x = X), names_as_colnames = TRUE),
+    expected = data.frame(
+      Geneid = c(1, 2),
+      Length = c(2, 3),
+      x = c(10, 20)
+    ),
+    info = "tbl_df as input - this should fail if is.numeric(x[, 3]) is tested"
+  )
+})
+
+###############################################################################
