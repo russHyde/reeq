@@ -92,8 +92,10 @@ test_that("is_nonempty_list", {
   expect_equal(
     object = is_nonempty_list(data.frame(a = 1:3)),
     expected = TRUE,
-    info = "data.frames are lists, so should be valid input to
-is_nonempty_list"
+    info = paste(
+      "`data.frame`s are `list`s, so should be valid input to",
+      "`is_nonempty_list`"
+    )
   )
 })
 

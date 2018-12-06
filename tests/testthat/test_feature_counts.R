@@ -291,8 +291,9 @@ test_that("cbind_feature_counts", {
       )),
       names_as_colnames = TRUE
     ),
-    info = "If names_as_colnames = TRUE, there should be names in the
-count_list"
+    info = paste(
+      "If names_as_colnames = TRUE, there should be names in the count_list"
+    )
   )
 
   # Valid input
@@ -303,42 +304,42 @@ count_list"
   # output
 
   # Single data.frame input
-  X <- .df(
+  x <- .df(
     Geneid = c(1, 2, 3),
     Length = c(10, 30, 30),
     count.col = c(123, 234, 345)
   )
   expect_equal(
     object = cbind_feature_counts(
-      list(X),
+      list(x),
       names_as_colnames = FALSE
     ),
-    expected = X,
+    expected = x,
     info = "Single data.frame input, names_as_colnames = FALSE"
   )
   expect_equal(
     object = cbind_feature_counts(
-      list(a = X),
+      list(a = x),
       names_as_colnames = TRUE
     ),
-    expected = setNames(X, c("Geneid", "Length", "a")),
+    expected = setNames(x, c("Geneid", "Length", "a")),
     info = "Single data.frame input, names_as_colnames = TRUE"
   )
 
   # Two data.frames, same features
-  X <- .df(
+  x <- .df(
     Geneid = c(1, 2),
     Length = c(10, 30),
     count.col1 = c(123, 234)
   )
-  Y <- .df(
+  y <- .df(
     Geneid = c(1, 2),
     Length = c(10, 30),
     count.col2 = c(111, 222)
   )
   expect_equal(
     object = cbind_feature_counts(
-      list(X, Y),
+      list(x, y),
       names_as_colnames = FALSE
     ),
     expected = .df(
@@ -354,10 +355,10 @@ count_list"
   expect_equal(
     object = cbind_feature_counts(
       Map(
-        function(DF) {
-          setNames(DF, c("Geneid", "Length", "count"))
+        function(df) {
+          setNames(df, c("Geneid", "Length", "count"))
         },
-        list(a = X, b = Y)
+        list(a = x, b = y)
       ),
       names_as_colnames = TRUE
     ),
@@ -373,11 +374,11 @@ count_list"
   # read_tsv returns a tbl_df
   # But, if T is a tbl_df, and the third column stores a numeric entry,
   #   then is.numeric(T[, 3]) is FALSE
-  X <- dplyr::tbl_df(
+  x <- dplyr::tbl_df(
     .df(Geneid = c(1, 2), Length = c(2, 3), count.col = c(10, 20))
   )
   expect_equal(
-    object = cbind_feature_counts(list(x = X), names_as_colnames = TRUE),
+    object = cbind_feature_counts(list(x = x), names_as_colnames = TRUE),
     expected = data.frame(
       Geneid = c(1, 2),
       Length = c(2, 3),
