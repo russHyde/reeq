@@ -1,0 +1,4 @@
+# Program:featureCounts v1.6.2; Command:"featureCounts" "-p" "-s0" "-T2" "-t" "exon" "-g" "gene_id" "-a" "data/ext/genomes/GRCh38/ensembl.v84/Homo_sapiens.GRCh38.84.gtf.gz" "-o" "data/job/counts/SAMEA3488768/ERR982689.fcount" "data/job/sorted/SAMEA3488768/ERR982689.primary.queryname.bam"
+Geneid	Chr	Start	End	Strand	Length	some/file/name.bam
+ENSG00000223972	1;1;1;1;1;1;1;1;1	11869;12010;12179;12613;12613;12975;13221;13221;13453	12227;12057;12227;12721;12697;13052;13374;14409;13670	+;+;+;+;+;+;+;+;+	1735	0
+ENSG00000227232	1;1;1;1;1;1;1;1;1;1;1	14404;15005;15796;16607;16858;17233;17606;17915;18268;24738;29534	14501;15038;15947;16765;17055;17368;17742;18061;18366;24891;29570	-;-;-;-;-;-;-;-;-;-;-	1351	2
