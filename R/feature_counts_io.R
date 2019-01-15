@@ -16,6 +16,9 @@
 #'   `readr::read_tsv` that specify the format of the input files and whether
 #'   a progress bar should be shown.
 #'
+#' @importFrom   magrittr      set_names
+#' @importFrom   purrr         map
+#'
 #' @export
 
 read_feature_counts <- function(
@@ -24,7 +27,13 @@ read_feature_counts <- function(
                                 comment = "#",
                                 col_types = "cii",
                                 progress = FALSE) {
-  NULL
+  files %>%
+    purrr::map(
+      read_single_feature_counts_file,
+      comment = comment, col_types = col_types, progress = progress
+    ) %>%
+    magrittr::set_names(sample_ids) %>%
+    cbind_feature_counts(names_as_colnames = TRUE)
 }
 
 ###############################################################################
