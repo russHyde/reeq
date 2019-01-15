@@ -1,0 +1,4 @@
+# Program:featureCounts v1.6.2; Command:"featureCounts" "-p" "-s0" "-T2" "-t" "exon" "-g" "gene_id" "-a" "data/ext/genomes/GRCh38/ensembl.v84/Homo_sapiens.GRCh38.84.gtf.gz" "-o" "data/job/counts/SAMEA3488768/ERR982689.fcount" "data/job/sorted/SAMEA3488768/ERR982689.primary.queryname.bam" 
+Geneid	Length	some/file/name.bam
+ENSG00000223972	1735	0
+ENSG00000227232	1351	2
