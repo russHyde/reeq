@@ -9,9 +9,9 @@ feature_counts_to_dgelist(fcounts_df, sample_df, id_column = NULL, ...)
 \arguments{
 \item{fcounts_df}{A data.frame containing the featureCounts (ie,
 read number) for each gene (rows) in each sample (columns 3:END). The
-first two columns should be "Geneid" and "Length". "Length" should be a
+first two columns should be "feature_id" and "Length". "Length" should be a
 numeric column. The column names are
-taken to be the working ids for the samples (except Geneid and Length) and
+taken to be the working ids for the samples (except feature_id and Length) and
 each column name must be present once in the `id_column` (may be the
 rownames) of `sample_df`.}
 

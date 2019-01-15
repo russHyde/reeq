@@ -44,8 +44,8 @@ is_nonempty_list <- function(.x) {
 
 ###############################################################################
 
-#' - `fcounts_df` should have first two cols "Geneid" and "Length".
-#' - Both Length and all cols other than "Geneid" (of which there should be
+#' - `fcounts_df` should have first two cols "feature_id" and "Length".
+#' - Both Length and all cols other than "feature_id" (of which there should be
 #' >= 1) should be numeric.
 #' - This only tests the structure of the data.frame; each count column
 #' should also correspond to a sample id in sample_df, this is tested later.
@@ -57,7 +57,11 @@ is_nonempty_list <- function(.x) {
 is_valid_fcounts_df <- function(df) {
   is_nonempty_df(df) &&
     ncol(df) >= 3 &&
-    all(colnames(df)[1:2] == c("Geneid", "Length")) &&
+    all(
+      colnames(df)[1:2] == c("feature_id", "Length")
+    ) &&
     is.numeric(df[["Length"]]) &&
-    all(vapply(df[, -(1:2)], is.numeric, logical(1)))
+    all(
+      vapply(df[, -(1:2)], is.numeric, logical(1))
+    )
 }
