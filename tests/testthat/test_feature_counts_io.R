@@ -4,6 +4,16 @@ context("Tests for importing `featureCounts` datasets")
 
 ###############################################################################
 
+setup_fcounts_contents <- function(){
+  tibble::tibble(
+    Geneid = c("abc", "def"),
+    Length = c(123L, 234L),
+    some_file_name = c(1L, 10L)
+  )
+}
+
+###############################################################################
+
 test_that("read_single_feature_counts_file - from file", {
   expect_equal(
     read_single_feature_counts_file("feature_counts/short_1.tsv"),
@@ -18,11 +28,9 @@ test_that("read_single_feature_counts_file - from file", {
 
 test_that("read_single_feature_counts_file - mocking read_tsv", {
   m <- mockery::mock(
-    tibble::tibble(
-      Geneid = c("abc", "def", "ghi"),
-      Length = c(123L, 234L, 345L),
-      counts = c(1L, 0L, 10L),
-      non_numeric = c("shouldn't", "be", "possible")
+    dplyr::mutate(
+      setup_fcounts_contents(),
+      non_numeric = c("shouldn't be", "possible")
     )
   )
   with_mock(
@@ -39,11 +47,7 @@ test_that("read_single_feature_counts_file - mocking read_tsv", {
 ###############################################################################
 
 test_that("read_feature_counts - matching features", {
-  file_contents <- tibble::tibble(
-    Geneid = c("abc", "def"),
-    Length = c(123L, 234L),
-    some_file_name = c(1L, 10L)
-  )
+  file_contents <- setup_fcounts_contents()
 
   m <- mockery::mock(file_contents, cycle = TRUE)
 
