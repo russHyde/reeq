@@ -128,8 +128,28 @@ cbind_feature_counts <- function(
     is_valid_fcounts_df(df) && ncol(df) == 3
   }
 
+  are_features_consistent <- function() {
+    feature_ids <- count_list[[1]]$feature_id
+    lengths <- count_list[[1]]$length
+    all(
+      vapply(count_list, function(x) {
+        all(x$feature_id == feature_ids)
+      }, logical(1))
+    ) &&
+      all(
+        vapply(count_list, function(x) {
+          all(x$length == lengths)
+        }, logical(1))
+      )
+  }
+
+  is_df_list_valid <- function() {
+    all(vapply(count_list, is_df_valid, logical(1))) &&
+      are_features_consistent()
+  }
+
   # Each entry should be a data.frame
-  if (!all(vapply(count_list, is_df_valid, logical(1)))) {
+  if (!is_df_list_valid()) {
     stop(
       paste(
         "Each entry in count_list should be a data.frame with three cols:",

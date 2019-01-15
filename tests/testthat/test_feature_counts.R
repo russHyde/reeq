@@ -202,7 +202,7 @@ test_that("feature_counts_to_dgelist: valid input", {
 
 ###############################################################################
 
-test_that("cbind_feature_counts", {
+test_that("cbind_feature_counts - invalid input", {
 
   # - Input should be a list of data.frames, each containing three columns
   # (feature_id, length, <count.column>) in that order
@@ -291,6 +291,28 @@ test_that("cbind_feature_counts", {
     )
   )
 
+  # - features should be identical in each data.frame in the list
+  x <- .df(feature_id = "1", length = 2, count1 = 123)
+  y <- .df(feature_id = "2", length = 2, count2 = 234)
+  z <- .df(feature_id = "1", length = 3, count3 = 345)
+  expect_error(
+    cbind_feature_counts(list(x = x, y = y)),
+    info = paste(
+      "feature IDs should be identical in each data.frame passed to",
+      "`cbind_feature_counts`"
+    )
+  )
+  expect_error(
+    cbind_feature_counts(list(x = x, z = z)),
+    info = paste(
+      "feature lengths should be identical in each data.frame passed to",
+      "`cbind_feature_counts`"
+    )
+  )
+})
+
+test_that("cbind_feature_counts - valid input", {
+
   # Valid input
   # - Function uses `merge` semantics over the feature_id and length
   # so there doesn't need to be exactly the same features in each input
@@ -305,18 +327,12 @@ test_that("cbind_feature_counts", {
     count.col = c(123, 234, 345)
   )
   expect_equal(
-    object = cbind_feature_counts(
-      list(x),
-      names_as_colnames = FALSE
-    ),
+    object = cbind_feature_counts(list(x), names_as_colnames = FALSE),
     expected = x,
     info = "Single data.frame input, names_as_colnames = FALSE"
   )
   expect_equal(
-    object = cbind_feature_counts(
-      list(a = x),
-      names_as_colnames = TRUE
-    ),
+    object = cbind_feature_counts(list(a = x), names_as_colnames = TRUE),
     expected = setNames(x, c("feature_id", "length", "a")),
     info = "Single data.frame input, names_as_colnames = TRUE"
   )
@@ -333,10 +349,7 @@ test_that("cbind_feature_counts", {
     count.col2 = c(111, 222)
   )
   expect_equal(
-    object = cbind_feature_counts(
-      list(x, y),
-      names_as_colnames = FALSE
-    ),
+    object = cbind_feature_counts(list(x, y), names_as_colnames = FALSE),
     expected = .df(
       feature_id = c(1, 2),
       length = c(10, 30),

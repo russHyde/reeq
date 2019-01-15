@@ -4,7 +4,7 @@ context("Tests for importing `featureCounts` datasets")
 
 ###############################################################################
 
-setup_fcounts_contents <- function(){
+setup_fcounts_contents <- function() {
   tibble::tibble(
     Geneid = c("abc", "def"),
     Length = c(123L, 234L),
@@ -55,14 +55,13 @@ test_that("read_feature_counts - matching features", {
     read_tsv = m, {
       expect_equivalent(
         object = read_feature_counts(
-          files = c("some_file", "some_other_file"),
-          sample_ids = c("sample1", "sample2")
+          files = c("file1", "file2"), sample_ids = c("sample1", "sample2")
         ),
-        expected = file_contents %>%
-          dplyr::transmute(
-            feature_id = Geneid, length = Length, sample1 = some_file_name,
-            sample2 = some_file_name
-          ),
+        expected = dplyr::transmute(
+          file_contents,
+          feature_id = Geneid, length = Length, sample1 = some_file_name,
+          sample2 = some_file_name
+        ),
         info = paste(
           "import and combine several short-format featureCounts files that",
           "have the same features"
@@ -74,3 +73,37 @@ test_that("read_feature_counts - matching features", {
 })
 
 ###############################################################################
+
+test_that("read_feature_counts - non-matching features", {
+  file1 <- setup_fcounts_contents()
+  file2 <- dplyr::mutate(file1, Geneid = c("different", "IDs"))
+  file3 <- dplyr::mutate(file1, Length = c(10000L, 100000L))
+
+  m1 <- mockery::mock(file1, file2)
+  m2 <- mockery::mock(file1, file3)
+
+  with_mock(
+    read_tsv = m1, {
+      expect_error(
+        read_feature_counts(c("file1", "file2"), c("sample1", "sample2")),
+        info = paste(
+          "Gene IDs should match when collapsing several feature-counts files"
+        )
+      )
+    },
+    .env = "readr"
+  )
+
+  with_mock(
+    read_tsv = m2, {
+      expect_error(
+        read_feature_counts(c("file1", "file3"), c("sample1", "sample3")),
+        info = paste(
+          "Gene Lengths should match when collapsing several feature-counts",
+          "files"
+        )
+      )
+    },
+    .env = "readr"
+  )
+})
