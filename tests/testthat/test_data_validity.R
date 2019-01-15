@@ -104,11 +104,10 @@ test_that("is_nonempty_list", {
 test_that("is_valid_fcounts_df", {
   expect_true(
     object = is_valid_fcounts_df(
-      data.frame(
+      .df(
         feature_id = c("ENSG01234567890"),
         length = 1234,
-        some_sample = 9876,
-        stringsAsFactors = FALSE
+        some_sample = 9876
       )
     ),
     info = paste(
@@ -119,11 +118,10 @@ test_that("is_valid_fcounts_df", {
 
   expect_false(
     object = is_valid_fcounts_df(
-      data.frame(
+      .df(
         Geneid = "abc",
         length = 1234,
-        some_sample = 9876,
-        stringsAsFactors = FALSE
+        some_sample = 9876
       )
     ),
     info = paste(

@@ -3,11 +3,6 @@
 context("Tests for feature-count manipulating functions")
 
 ###############################################################################
-# helpers:
-
-.df <- function(...) data.frame(..., stringsAsFactors = FALSE)
-
-###############################################################################
 
 test_that("feature_counts_to_dgelist: invalid input", {
   fcounts_df1 <- .df(feature_id = letters[1:3], length = 1:3, id1 = 11:13)
