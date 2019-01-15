@@ -2,6 +2,7 @@
 
 export(cbind_feature_counts)
 export(feature_counts_to_dgelist)
+export(read_feature_counts)
 export(which_k_covered_across_samples)
 export(which_k_covered_each_sample)
 importFrom(Biobase,ExpressionSet)
