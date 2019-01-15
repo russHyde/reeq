@@ -44,11 +44,15 @@ is_nonempty_list <- function(.x) {
 
 ###############################################################################
 
-#' - `fcounts_df` should have first two cols "feature_id" and "length".
-#' - Both length and all cols other than "feature_id" (of which there should be
+#' Checks the validity of a feature-counts data-frame
+#'
+#' The `data.frame` `df` should have first two cols `feature_id` and `length`.
+#'
+#' Both `length` and all cols other than `feature_id` (of which there should be
 #' >= 1) should be numeric.
-#' - This only tests the structure of the data.frame; each count column
-#' should also correspond to a sample id in sample_df, this is tested later.
+#'
+#' This only tests the structure of the `data.frame`; each count column
+#' should also correspond to a valid sample.
 #'
 #' @param        df            Some data-frame
 #'

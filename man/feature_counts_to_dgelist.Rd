@@ -2,37 +2,38 @@
 % Please edit documentation in R/feature_counts.R
 \name{feature_counts_to_dgelist}
 \alias{feature_counts_to_dgelist}
-\title{feature_counts_to_dgelist}
+\title{Combine a list of feature-counts data-frames into an `edgeR` `DGEList`}
 \usage{
 feature_counts_to_dgelist(fcounts_df, sample_df, id_column = NULL, ...)
 }
 \arguments{
-\item{fcounts_df}{A data.frame containing the featureCounts (ie,
-read number) for each gene (rows) in each sample (columns 3:END). The
-first two columns should be "feature_id" and "length". "length" should be a
-numeric column. The column names are
-taken to be the working ids for the samples (except feature_id and length) and
-each column name must be present once in the `id_column` (may be the
-rownames) of `sample_df`.}
+\item{fcounts_df}{A `data.frame` containing the feature-counts
+(ie, read number) for each feature (gene; rows) in each sample (columns
+3:END). The first two columns should be `feature_id` and `length`.
+`length` should be a numeric column. The column names are taken to be the
+working IDs for the samples (except `feature_id` and `length`) and each
+column name must be present once in the `id_column` (may be the
+`rownames`) of `sample_df`.}
 
-\item{sample_df}{A data.frame containing the sample-level
+\item{sample_df}{A `data.frame` containing the sample-level
 annotation data, eg, the phenotypic info, the file locations, for each
-sample. This must either contain `id_column` as a colname or have defined
-rownames if `id_column` is NULL. The samples defined in the `id_column` of
-`sample_df` must be a superset of the samples present in the colnames of
-`counts.df`. The rows of sample_df that correspond to the samples in
-`fcounts_df` will be passed into the DGEList::samples slot, possibly being
-reordered to match the ordering of the samples in `fcounts_df`.}
+sample. This must either contain `id_column` as a column name or have
+defined `rownames` if `id_column` is `NULL`. The samples defined in the
+`id_column` of `sample_df` must be a superset of the samples present in
+the colnames of `fcounts_df`. The rows of `sample_df` that correspond to
+the samples in `fcounts_df` will be passed into the `DGEList::samples`
+slot, possibly being reordered to match the ordering of the samples in
+`fcounts_df`.}
 
-\item{id_column}{A single string giving the column of sample_df
-that gives the working ids for the samples in the experiment. If NULL, the
-ids are taken from the rownames of `sample_df` (which must be defined in
-that case).}
+\item{id_column}{A single string giving the column of `sample_df`
+that gives the working IDs for the samples in the experiment. If `NULL`,
+the IDs are taken from the `rownames` of `sample_df` (which must be
+defined in that case).}
 
-\item{...}{Additional parameters for passing to DGEList.
+\item{...}{Additional parameters for passing to `DGEList`.
 Note that these should be ordered according to the sample-ordering in
 `fcounts_df` (if this differs from that in `sample_df`).}
 }
 \description{
-feature_counts_to_dgelist
+Combine a list of feature-counts data-frames into an `edgeR` `DGEList`
 }
