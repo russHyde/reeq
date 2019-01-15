@@ -3,20 +3,15 @@
 context("Tests for feature-count manipulating functions")
 
 ###############################################################################
-# helpers:
-
-.df <- function(...) data.frame(..., stringsAsFactors = FALSE)
-
-###############################################################################
 
 test_that("feature_counts_to_dgelist: invalid input", {
-  fcounts_df1 <- .df(Geneid = letters[1:3], Length = 1:3, id1 = 11:13)
+  fcounts_df1 <- .df(feature_id = letters[1:3], length = 1:3, id1 = 11:13)
   samp_df1 <- .df(id = paste0("id", 1:3))
 
   # fcounts_df should be:
   # - a non-empty data.frame
-  # - with Geneid ...
-  # - and Length as the first two column names,
+  # - with feature_id ...
+  # - and length as the first two column names,
   # - and numeric entries elsewhere
   expect_error(
     object = feature_counts_to_dgelist(
@@ -28,35 +23,35 @@ test_that("feature_counts_to_dgelist: invalid input", {
   )
   expect_error(
     object = feature_counts_to_dgelist(
-      fcounts_df = .df(Length = 1:10, id1 = 11:20),
+      fcounts_df = .df(length = 1:10, id1 = 11:20),
       sample_df = samp_df1,
       id_column = "id"
     ),
-    info = "fcounts_df should have Geneid as first column"
+    info = "fcounts_df should have feature_id as first column"
   )
   expect_error(
     object = feature_counts_to_dgelist(
-      fcounts_df = .df(Geneid = letters[1:10], id1 = 11:20),
+      fcounts_df = .df(feature_id = letters[1:10], id1 = 11:20),
       sample_df = samp_df1,
       id_column = "id"
     ),
-    info = "fcounts_df should have Length as second column"
+    info = "fcounts_df should have length as second column"
   )
   expect_error(
     object = feature_counts_to_dgelist(
       fcounts_df = .df(
-        Geneid = letters[1:10],
-        Length = letters[1:10],
+        feature_id = letters[1:10],
+        length = letters[1:10],
         id1 = 11:20
       ),
       sample_df = samp_df1,
       id_column = "id"
     ),
-    info = "fcounts_df::Length should be numerical"
+    info = "fcounts_df::length should be numerical"
   )
   expect_error(
     object = feature_counts_to_dgelist(
-      fcounts_df = .df(Geneid = letters[1:10], Length = 1:10),
+      fcounts_df = .df(feature_id = letters[1:10], length = 1:10),
       sample_df = samp_df1,
       id_column = "id"
     ),
@@ -66,14 +61,14 @@ test_that("feature_counts_to_dgelist: invalid input", {
   expect_error(
     object = feature_counts_to_dgelist(
       fcounts_df = .df(
-        Geneid = letters[1:10],
-        Length = 1:10,
+        feature_id = letters[1:10],
+        length = 1:10,
         id1 = c("NOT", "A", "COUNT")
       ),
       sample_df = samp_df1,
       id_column = "id"
     ),
-    info = "All columns other than Geneid and Length should be counts"
+    info = "All columns other than feature_id and length should be counts"
   )
   # `sample_df` should be
   # - a `data.frame`
@@ -149,10 +144,10 @@ test_that("feature_counts_to_dgelist: invalid input", {
 #' @importFrom   magrittr      %>%   set_rownames
 #'
 test_that("feature_counts_to_dgelist: valid input", {
-  fcounts_df1 <- .df(Geneid = letters[1:3], Length = 1:3, id1 = 11:13)
+  fcounts_df1 <- .df(feature_id = letters[1:3], length = 1:3, id1 = 11:13)
   fcounts_df2 <- .df(
-    Geneid = letters[1:3],
-    Length = 1:3,
+    feature_id = letters[1:3],
+    length = 1:3,
     id1 = 11:13,
     id2 = 20:22,
     id3 = 31:33
@@ -173,8 +168,8 @@ test_that("feature_counts_to_dgelist: valid input", {
     samples = .df(id = "id1"),
     genes = .df(
       row.names = letters[1:3],
-      Geneid = letters[1:3],
-      Length = 1:3
+      feature_id = letters[1:3],
+      length = 1:3
     )
   )
   expect_equal(
@@ -198,8 +193,8 @@ test_that("feature_counts_to_dgelist: valid input", {
       samples = magrittr::set_rownames(samp_df1, samp_df1$id),
       genes = .df(
         row.names = letters[1:3],
-        Geneid = letters[1:3],
-        Length = 1:3
+        feature_id = letters[1:3],
+        length = 1:3
       )
     )
   )
@@ -210,7 +205,7 @@ test_that("feature_counts_to_dgelist: valid input", {
 test_that("cbind_feature_counts", {
 
   # - Input should be a list of data.frames, each containing three columns
-  # (Geneid, Length, <count.column>) in that order
+  # (feature_id, length, <count.column>) in that order
   # - count.column may or may not have a sample-specific id as header
   # - and the user may want to rename the cols anyway (eg, if they are
   # long-winded filenames)
@@ -236,37 +231,37 @@ test_that("cbind_feature_counts", {
     object = cbind_feature_counts(list("Not a data.frame")),
     info = "Input should be a list of data.frames"
   )
-  # - A list with data.frames that don't have Geneid column
+  # - A list with data.frames that don't have feature_id column
   expect_error(
     object = cbind_feature_counts(list(.df(
       A = 1,
-      Length = 2,
+      length = 2,
       Count = 3
     ))),
-    info = "1st column should be 'Geneid' in each data.frame"
+    info = "1st column should be 'feature_id' in each data.frame"
   )
-  # - A list with data.frames that don't have Length column
+  # - A list with data.frames that don't have length column
   expect_error(
     object = cbind_feature_counts(list(.df(
-      Geneid = 1,
+      feature_id = 1,
       B = 2,
       Count = 3
     ))),
-    info = "2nd column should be 'Length' in each data.frame"
+    info = "2nd column should be 'length' in each data.frame"
   )
   # - A list with data.frames that don't have counts column (too few columns)
   expect_error(
     object = cbind_feature_counts(list(.df(
-      Geneid = 1,
-      Length = 2
+      feature_id = 1,
+      length = 2
     ))),
     info = "Missing count column - too few columns"
   )
   # - A list with data.frames that don't have counts column (non-numeric col)
   expect_error(
     object = cbind_feature_counts(list(.df(
-      Geneid = 1,
-      Length = 2,
+      feature_id = 1,
+      length = 2,
       not.county = "A"
     ))),
     info = "Missing count column - non-numeric column"
@@ -274,8 +269,8 @@ test_that("cbind_feature_counts", {
   # - A list with data.frames that have more than three cols
   expect_error(
     object = cbind_feature_counts(list(.df(
-      Geneid = 1,
-      Length = 2,
+      feature_id = 1,
+      length = 2,
       county = 123,
       extra = "ABC"
     ))),
@@ -285,8 +280,8 @@ test_that("cbind_feature_counts", {
   expect_error(
     object = cbind_feature_counts(
       list(.df(
-        Geneid = 1,
-        Length = 2,
+        feature_id = 1,
+        length = 2,
         count.col = 345
       )),
       names_as_colnames = TRUE
@@ -297,7 +292,7 @@ test_that("cbind_feature_counts", {
   )
 
   # Valid input
-  # - Function uses `merge` semantics over the Geneid and Length
+  # - Function uses `merge` semantics over the feature_id and length
   # so there doesn't need to be exactly the same features in each input
   # data.frame
   # - names_as_colnames determines what the column names should be in the
@@ -305,8 +300,8 @@ test_that("cbind_feature_counts", {
 
   # Single data.frame input
   x <- .df(
-    Geneid = c(1, 2, 3),
-    Length = c(10, 30, 30),
+    feature_id = c(1, 2, 3),
+    length = c(10, 30, 30),
     count.col = c(123, 234, 345)
   )
   expect_equal(
@@ -322,19 +317,19 @@ test_that("cbind_feature_counts", {
       list(a = x),
       names_as_colnames = TRUE
     ),
-    expected = setNames(x, c("Geneid", "Length", "a")),
+    expected = setNames(x, c("feature_id", "length", "a")),
     info = "Single data.frame input, names_as_colnames = TRUE"
   )
 
   # Two data.frames, same features
   x <- .df(
-    Geneid = c(1, 2),
-    Length = c(10, 30),
+    feature_id = c(1, 2),
+    length = c(10, 30),
     count.col1 = c(123, 234)
   )
   y <- .df(
-    Geneid = c(1, 2),
-    Length = c(10, 30),
+    feature_id = c(1, 2),
+    length = c(10, 30),
     count.col2 = c(111, 222)
   )
   expect_equal(
@@ -343,8 +338,8 @@ test_that("cbind_feature_counts", {
       names_as_colnames = FALSE
     ),
     expected = .df(
-      Geneid = c(1, 2),
-      Length = c(10, 30),
+      feature_id = c(1, 2),
+      length = c(10, 30),
       count.col1 = c(123, 234),
       count.col2 = c(111, 222)
     ),
@@ -356,15 +351,15 @@ test_that("cbind_feature_counts", {
     object = cbind_feature_counts(
       Map(
         function(df) {
-          setNames(df, c("Geneid", "Length", "count"))
+          setNames(df, c("feature_id", "length", "count"))
         },
         list(a = x, b = y)
       ),
       names_as_colnames = TRUE
     ),
     expected = .df(
-      Geneid = c(1, 2),
-      Length = c(10, 30),
+      feature_id = c(1, 2),
+      length = c(10, 30),
       a = c(123, 234),
       b = c(111, 222)
     ),
@@ -375,13 +370,13 @@ test_that("cbind_feature_counts", {
   # But, if T is a tbl_df, and the third column stores a numeric entry,
   #   then is.numeric(T[, 3]) is FALSE
   x <- dplyr::tbl_df(
-    .df(Geneid = c(1, 2), Length = c(2, 3), count.col = c(10, 20))
+    .df(feature_id = c(1, 2), length = c(2, 3), count.col = c(10, 20))
   )
   expect_equal(
     object = cbind_feature_counts(list(x = x), names_as_colnames = TRUE),
     expected = data.frame(
-      Geneid = c(1, 2),
-      Length = c(2, 3),
+      feature_id = c(1, 2),
+      length = c(2, 3),
       x = c(10, 20)
     ),
     info = "tbl_df as input - this should fail if is.numeric(x[, 3]) is tested"

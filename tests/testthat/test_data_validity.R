@@ -100,3 +100,33 @@ test_that("is_nonempty_list", {
 })
 
 ###############################################################################
+
+test_that("is_valid_fcounts_df", {
+  expect_true(
+    object = is_valid_fcounts_df(
+      .df(
+        feature_id = c("ENSG01234567890"),
+        length = 1234,
+        some_sample = 9876
+      )
+    ),
+    info = paste(
+      "`df` with `feature_id`, `length` and at-least-one sample is a valid",
+      "feature-counts `df`"
+    )
+  )
+
+  expect_false(
+    object = is_valid_fcounts_df(
+      .df(
+        Geneid = "abc",
+        length = 1234,
+        some_sample = 9876
+      )
+    ),
+    info = paste(
+      "feature-counts `data.frame`s should use `feature_id`, not `Geneid`",
+      "to indicate feature"
+    )
+  )
+})
