@@ -106,13 +106,13 @@ test_that("is_valid_fcounts_df", {
     object = is_valid_fcounts_df(
       data.frame(
         feature_id = c("ENSG01234567890"),
-        Length = 1234,
+        length = 1234,
         some_sample = 9876,
         stringsAsFactors = FALSE
       )
     ),
     info = paste(
-      "`df` with `feature_id`, `Length` and at-least-one sample is a valid",
+      "`df` with `feature_id`, `length` and at-least-one sample is a valid",
       "feature-counts `df`"
     )
   )
@@ -121,7 +121,7 @@ test_that("is_valid_fcounts_df", {
     object = is_valid_fcounts_df(
       data.frame(
         Geneid = "abc",
-        Length = 1234,
+        length = 1234,
         some_sample = 9876,
         stringsAsFactors = FALSE
       )
