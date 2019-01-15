@@ -21,6 +21,15 @@ to the entries in `files`. If `NULL` ...}
 a progress bar should be shown.}
 }
 \description{
-Import read counts from a set of featureCounts files and combine them into
-a single `data.frame`
+The files may be of standard format or of short `featureCounts` format (see
+  below). Only the `Geneid`, `Length` and counts are kept and the `Geneid`
+  and `Length` columns are renamed `feature_id` and `length`.
+}
+\details{
+Standard format contains: `Geneid`, `Chr`, `Start`, `End`, `Strand`,
+  `Length`, counts
+
+Short format contains: `Geneid`, `Length`, counts
+
+#'
 }

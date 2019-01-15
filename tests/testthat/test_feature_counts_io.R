@@ -22,9 +22,24 @@ test_that("read_single_feature_counts_file - from file", {
       length = c(1735L, 1351L),
       "some/file/name.bam" = c(0L, 2L)
     ),
-    info = "read a single valid short-format featureCounts file"
+    info = "read a single valid short-format `featureCounts` file"
+  )
+
+  expect_equal(
+    read_single_feature_counts_file(
+      "feature_counts/standard_1.tsv",
+      col_types = "cccccii"
+    ),
+    tibble::tibble(
+      feature_id = c("ENSG00000223972", "ENSG00000227232"),
+      length = c(1735L, 1351L),
+      "some/file/name.bam" = c(0L, 2L)
+    ),
+    info = "read a single valid standard-format `featureCounts` file"
   )
 })
+
+###############################################################################
 
 test_that("read_single_feature_counts_file - mocking read_tsv", {
   m <- mockery::mock(

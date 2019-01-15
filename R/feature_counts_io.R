@@ -7,6 +7,15 @@
 #' Import read counts from a set of featureCounts files and combine them into
 #' a single `data.frame`
 #'
+#' The files may be of standard format or of short `featureCounts` format (see
+#'   below). Only the `Geneid`, `Length` and counts are kept and the `Geneid`
+#'   and `Length` columns are renamed `feature_id` and `length`.
+#'
+#' Standard format contains: `Geneid`, `Chr`, `Start`, `End`, `Strand`,
+#'   `Length`, counts
+#'
+#' Short format contains: `Geneid`, `Length`, counts
+#'
 #' @param        files         A vector of file-paths. Each should be an output
 #'   from `featureCounts` and contain, at least, the `Geneid`, `Length` and
 #'   feature-count columns.
@@ -53,10 +62,17 @@ read_single_feature_counts_file <- function(
                                             comment = "#",
                                             col_types = "cii",
                                             progress = FALSE) {
+  # Remove columns that are present in the standard-format featureCounts but
+  # which aren't of use in differential expression.
+  drop_unrequired_columns <- function(df) {
+    df[setdiff(colnames(df), c("Chr", "Start", "End", "Strand"))]
+  }
+
   fcounts <- readr::read_tsv(
     file,
     comment = comment, col_types = col_types, progress = progress
   ) %>%
+    drop_unrequired_columns() %>%
     dplyr::rename_(
       feature_id = ~Geneid,
       length = ~Length
