@@ -106,6 +106,7 @@ feature_counts_to_dgelist <- function(
 #' output `data.frame` are taken from the `list` names in `count_list`.
 #'
 #' @importFrom   magrittr      %>%
+#' @importFrom   purrr         map_lgl
 #' @importFrom   stats         setNames
 #'
 #' @export
@@ -128,23 +129,34 @@ cbind_feature_counts <- function(
     is_valid_fcounts_df(df) && ncol(df) == 3
   }
 
-  are_features_consistent <- function() {
-    feature_ids <- count_list[[1]]$feature_id
-    lengths <- count_list[[1]]$length
-    all(
-      vapply(count_list, function(x) {
-        all(x$feature_id == feature_ids)
-      }, logical(1))
-    ) &&
+  is_each_df_valid <- function() {
+    all(purrr::map_lgl(count_list, is_df_valid))
+  }
+
+  all_match <- function(df, column, target) {
+    all(df[[column]] == target)
+  }
+
+  df_column_consistency_builder <- function(column) {
+    function() {
+      target <- count_list[[1]][[column]]
       all(
-        vapply(count_list, function(x) {
-          all(x$length == lengths)
-        }, logical(1))
+        purrr::map_lgl(count_list, all_match, column, target)
       )
+    }
+  }
+
+  are_feature_ids_consistent <- df_column_consistency_builder("feature_id")
+
+  are_feature_lengths_consistent <- df_column_consistency_builder("length")
+
+  are_features_consistent <- function() {
+    are_feature_ids_consistent() &&
+      are_feature_lengths_consistent()
   }
 
   is_df_list_valid <- function() {
-    all(vapply(count_list, is_df_valid, logical(1))) &&
+    is_each_df_valid() &&
       are_features_consistent()
   }
 
@@ -152,16 +164,18 @@ cbind_feature_counts <- function(
   if (!is_df_list_valid()) {
     stop(
       paste(
-        "Each entry in count_list should be a data.frame with three cols:",
-        "feature_id, length and a count column (the latter can have any name",
-        "but must be a numeric column)"
+        "Each entry in `count_list` should be a `data.frame` with three",
+        "columns: `feature_id`, `length` and a count column (the latter can",
+        "have any name but must be a numeric column).",
+        "The feature-IDs and feature lengths must match between the different",
+        "`data.frames` in `count_list`"
       )
     )
   }
 
   # If names_as_colnames = TRUE, there should be names in the count_list
   if (names_as_colnames && is.null(names(count_list))) {
-    stop("names(count_list) should be defined if names_as_colnames = TRUE")
+    stop("names(count_list) should be defined if `names_as_colnames` = TRUE")
   }
 
   # Reset the count column to be the same as the name of the corresponding
