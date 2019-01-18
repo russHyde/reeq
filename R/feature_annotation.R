@@ -28,14 +28,14 @@ get_gc_percent <- function(
     filters = feature_column,
     values = feature_ids,
     mart = mart
-  )
+  ) %>%
+    magrittr::set_colnames(c("feature_id", "gc_percent"))
 
   data.frame(
     feature_id = feature_ids,
     stringsAsFactors = FALSE
   ) %>%
-    merge(bm, by.x = "feature_id", by.y = feature_column, all.x = TRUE) %>%
-    dplyr::rename_(gc_percent = ~gc_column) %>%
+    merge(bm, by = "feature_id", all.x = TRUE) %>%
     dplyr::mutate_(gc_percent = ~as.numeric(gc_percent))
 }
 
