@@ -22,4 +22,5 @@ Imports: magrittr,
     methods,
     dplyr,
     readr,
-    purrr
+    purrr,
+    biomaRt
