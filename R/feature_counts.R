@@ -1,4 +1,5 @@
-#' Combine a list of feature-counts data-frames into an `edgeR` `DGEList`
+#' Convert a `data.frame` containing feature-count data into an
+#'   `edgeR::DGEList`
 #'
 #' @param        fcounts_df    A `data.frame` containing the feature-counts
 #'   (ie, read number) for each feature (gene; rows) in each sample (columns
