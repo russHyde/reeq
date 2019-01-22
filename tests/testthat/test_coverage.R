@@ -4,14 +4,21 @@ context("Tests for coverage functions in `reeq`")
 
 ###############################################################################
 
+get_i2 <- function() {
+  # 2 x 2 identity matrix
+  diag(rep(1, 2))
+}
+
+get_t2 <- function() {
+  # 2 x 2 all-ones upper-triangular
+  matrix(c(1, 0, 1, 1), nrow = 2)
+}
+
 ### ======================================================================= ###
 #   Functions for QC-filtering on coverage
 ### ======================================================================= ###
 
 test_that("check_validity_k_covered", {
-  # 2 x 2 identity matrix
-  i2 <- diag(rep(1, 2))
-
   # `mat` should be a matrix or a data.frame
   expect_error(
     object = check_validity_k_covered(mat = "Not a matrix"),
@@ -30,7 +37,7 @@ test_that("check_validity_k_covered", {
   # `k` should be a number
   expect_error(
     object = check_validity_k_covered(
-      mat = i2,
+      mat = get_i2(),
       k = "Not a number"
     ),
     info = "k should be a number in which_k_covered_*"
@@ -38,7 +45,7 @@ test_that("check_validity_k_covered", {
 
   expect_error(
     object = check_validity_k_covered(
-      mat = i2,
+      mat = get_i2(),
       k = 1:2
     ),
     info = "k should be a single number in which_k_covered_*"
@@ -50,10 +57,9 @@ test_that("check_validity_k_covered", {
 test_that("which_k_covered_each_sample", {
   # Assumes: genes are indexed on rows, samples on columns
 
-  # 2 x 2 identity matrix
-  i2 <- diag(rep(1, 2))
-  # 2 x 2 all-ones upper-triangular
-  t2 <- matrix(c(1, 0, 1, 1), nrow = 2)
+  # get_i2 returns the 2 x 2 identity matrix
+
+  # get_t2() returns the 2 x 2 all-ones upper-triangular matrix
 
   # Validity checks are done in .check_validity_k_covered
 
@@ -61,7 +67,7 @@ test_that("which_k_covered_each_sample", {
 
   # i2 should return empty sequence for k > 0
   expect_equal(
-    object = which_k_covered_each_sample(mat = i2, k = 1),
+    object = which_k_covered_each_sample(mat = get_i2(), k = 1),
     expected = integer(0),
     info = paste(
       "2x2 identity: all rows contain some zeros => no rows pass when k > 0"
@@ -70,46 +76,48 @@ test_that("which_k_covered_each_sample", {
 
   # i2 should return empty sequence for k > 0, even when passed as a data.frame
   expect_equal(
-    object = which_k_covered_each_sample(mat = data.frame(i2), k = 1),
+    object = which_k_covered_each_sample(mat = data.frame(get_i2()), k = 1),
     expected = integer(0),
     info = "2x2 identity as data.frame"
   )
 
   # i2 should return c(1, 2) for k <= 0
   expect_equal(
-    object = which_k_covered_each_sample(mat = i2, k = 0),
+    object = which_k_covered_each_sample(mat = get_i2(), k = 0),
     expected = c(1, 2),
     info = paste(
       "2x2 identity: all rows contain some zeros => all rows pass when k <= 0"
     )
   )
 
-  # t2 should return empty sequence for k > 1
   expect_equal(
-    object = which_k_covered_each_sample(mat = t2, k = 2),
+    object = which_k_covered_each_sample(mat = get_t2(), k = 2),
     expected = integer(0),
-    info = "[[1 1], [0 1]]: all rows should fail when k > 1"
+    info = paste(
+      "[[1 1], [0 1]]: no rows have coverage >= k in all columns when k > 1"
+    )
   )
 
-  # t2 should return c(1) for k == 1
   expect_equal(
-    object = which_k_covered_each_sample(mat = t2, k = 1),
+    object = which_k_covered_each_sample(mat = get_t2(), k = 1),
     expected = 1,
-    info = "[[1 1], [0 1]]: first row should pass when k == 1"
+    info = paste(
+      "[[1 1], [0 1]]: only the first row has coverage >= k in all columns",
+      "when k = 1"
+    )
   )
 
-  # t2 should return c(1, 2) for k <= 0
   expect_equal(
-    object = which_k_covered_each_sample(mat = i2, k = 0),
+    object = which_k_covered_each_sample(mat = get_t2(), k = 0),
     expected = c(1, 2),
-    info = "[[1 1], [0 1]]: all rows should pass when k <= 0"
+    info = "[[1 1], [0 1]]: all rows have coverage >= k when k <= 0"
   )
 
   #
-  dge <- edgeR::DGEList(counts = i2)
+  dge <- edgeR::DGEList(counts = get_i2())
   expect_equal(
     object = which_k_covered_each_sample(dge, k = 1),
-    expected = which_k_covered_each_sample(i2, k = 1),
+    expected = which_k_covered_each_sample(get_i2(), k = 1),
     info = paste(
       "`which_k_covered...` should give the same results on DGEList as on",
       "the matrix of counts within it."
@@ -117,10 +125,10 @@ test_that("which_k_covered_each_sample", {
   )
 
   #
-  eset <- Biobase::ExpressionSet(assayData = i2)
+  eset <- Biobase::ExpressionSet(assayData = get_i2())
   expect_equal(
     object = which_k_covered_each_sample(eset, k = 1),
-    expected = which_k_covered_each_sample(i2, k = 1),
+    expected = which_k_covered_each_sample(get_i2(), k = 1),
     info = paste(
       "`which_k_covered...` should give the same results on ExpressionSet as",
       "on the matrix of intensities within it."
@@ -133,61 +141,58 @@ test_that("which_k_covered_each_sample", {
 test_that("which_k_covered_across_samples", {
   # Assumes: genes are indexed on rows, samples on columns
 
-  # 2 x 2 identity matrix
-  i2 <- diag(rep(1, 2))
-  # 2 x 2 all-ones upper-triangular
-  t2 <- matrix(c(1, 0, 1, 1), nrow = 2)
+  # get_i2() returns the 2 x 2 identity matrix
+
+  # get_t2() returns the 2 x 2 all-ones upper-triangular
 
   # Validity checks are done in check-validity.which_kCovered
 
   # Return all rows where coverage >= k across the summed columns
 
-  # i2 should return empty sequence for k > 1
   expect_equal(
-    object = which_k_covered_across_samples(mat = i2, k = 1.1),
+    object = which_k_covered_across_samples(mat = get_i2(), k = 1.1),
     expected = integer(0),
-    info = "2x2 identity: all rows sum to 1 => no rows pass when k > 1"
+    info = "2x2 identity: no rows have coverage-sum >= k when k > 1"
   )
 
-  # i2 should return empty sequence for k > 1, even when passed as a data.frame
   expect_equal(
-    object = which_k_covered_across_samples(mat = data.frame(i2), k = 1.1),
+    object = which_k_covered_across_samples(
+      mat = data.frame(get_i2()), k = 1.1
+    ),
     expected = integer(0),
     info = "2x2 identity as a data.frame"
   )
 
-  # i2 should return c(1, 2) for k <= 1
   expect_equal(
-    object = which_k_covered_across_samples(mat = i2, k = 1),
+    object = which_k_covered_across_samples(mat = get_i2(), k = 1),
     expected = c(1, 2),
-    info = "2x2 identity: all rows sum to 1 => all rows pass when k <= 1"
+    info = "2x2 identity: all rows have coverage-sum >= k when k <= 1"
   )
 
-  # t2 should return empty sequence for k > 2
   expect_equal(
-    object = which_k_covered_across_samples(mat = t2, k = 3),
+    object = which_k_covered_across_samples(mat = get_t2(), k = 3),
     expected = integer(0),
-    info = "[[1 1], [0 1]]: all rows should fail when k > 2"
+    info = "[[1 1], [0 1]]: no rows have coverage-sum >= k when k > 2"
   )
 
-  # t2 should return c(1) for k == 2
   expect_equal(
-    object = which_k_covered_across_samples(mat = t2, k = 2),
+    object = which_k_covered_across_samples(mat = get_t2(), k = 2),
     expected = 1,
-    info = "[[1 1], [0 1]]: first row should pass when k == 2"
+    info = paste(
+      "[[1 1], [0 1]]: only the first row has coverage-sum >= k when k == 2"
+    )
   )
 
-  # t2 should return c(1, 2) for k <= 1
   expect_equal(
-    object = which_k_covered_across_samples(mat = t2, k = 1),
+    object = which_k_covered_across_samples(mat = get_t2(), k = 1),
     expected = 1:2,
-    info = "[[1 1], [0 1]]: all rows should pass when k <= 1"
+    info = "[[1 1], [0 1]]: all rows have coverage-sum >= k when k <= 1"
   )
 
-  dge <- edgeR::DGEList(counts = i2)
+  dge <- edgeR::DGEList(counts = get_i2())
   expect_equal(
     object = which_k_covered_across_samples(dge, k = 1),
-    expected = which_k_covered_across_samples(i2, k = 1),
+    expected = which_k_covered_across_samples(get_i2(), k = 1),
     info = paste(
       "which_k_covered... should give the same results on DGEList as on the",
       "matrix of counts within it."
