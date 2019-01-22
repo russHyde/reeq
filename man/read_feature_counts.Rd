@@ -30,6 +30,4 @@ Standard format contains: `Geneid`, `Chr`, `Start`, `End`, `Strand`,
   `Length`, counts
 
 Short format contains: `Geneid`, `Length`, counts
-
-#'
 }

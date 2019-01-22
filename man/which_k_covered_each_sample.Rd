@@ -13,5 +13,6 @@ ExpressionSet.}
 \item{k}{A single number.}
 }
 \description{
-Returns the row index for those rows in a matrix where the row-sum is >= k.
+Returns the row index for those rows in a matrix where all entries in that
+row are >= k.
 }

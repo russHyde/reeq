@@ -12,7 +12,7 @@ check_validity_k_covered(mat, k)
 \item{k}{A single number}
 }
 \description{
-Helper function - it just checks that a numeric matrix or dataframe is
+Helper function - it just checks that a numeric `matrix` or `data.frame` is
   passed in and that a number is passed in; ensures validity of arguments to
-  the k-coverage functions
+  the `k`-coverage functions
 }

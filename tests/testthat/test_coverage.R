@@ -54,6 +54,41 @@ test_that("check_validity_k_covered", {
 
 ###############################################################################
 
+test_that("which_k_covered", {
+  # in t2 = [[1, 1],
+  #          [0, 1]], half the samples have coverage >= 2,
+  #                   all the samples have coverage >= 1
+  #
+  expect_equal(
+    object = which_k_covered(get_t2(), k = 2, fraction_of_samples = 0.6),
+    expected = integer(0),
+    info = paste(
+      "[[1, 1], [0, 1]]: no rows exist where 60% of the samples have",
+      "coverage >= 2"
+    )
+  )
+
+  expect_equal(
+    object = which_k_covered(get_t2(), k = 1, fraction_of_samples = 0.6),
+    expected = 1L,
+    info = paste(
+      "[[1, 1], [0, 1]]: only the first row has coveraged >= 1 in >= 60% of",
+      "the samples"
+    )
+  )
+
+  expect_equal(
+    object = which_k_covered(get_t2(), k = 1, fraction_of_samples = 0.5),
+    expected = 1:2,
+    info = paste(
+      "[[1, 1], [0, 1]]: both rows have coverage >= 1 in >= 50% of the",
+      "samples"
+    )
+  )
+})
+
+###############################################################################
+
 test_that("which_k_covered_each_sample", {
   # Assumes: genes are indexed on rows, samples on columns
 
