@@ -13,6 +13,8 @@ ExpressionSet.}
 \item{k}{A single number.}
 }
 \description{
-Returns the row indices for those rows in a matrix where every element in
-that row is >= k
+Returns the row indices for those rows in a matrix where the sum of the
+entries in that row is `>= k`. For example, in RNA-Seq, this returns the
+index of those features that have a coverage `>= k` when summed across all
+samples.
 }

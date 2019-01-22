@@ -15,6 +15,7 @@ ExpressionSet.}
 \item{lambda}{Some function lambda(mat, k).}
 }
 \description{
-Runs a function over a matrix/data.frame/DGEList/ExpressionSet. Returns a
-subset of the row indices for the matrix-like datastructure.
+Runs a function over a `matrix` / `data.frame` / `DGEList` /
+`ExpressionSet`. Returns a subset of the row indices for the `matrix`-like
+datastructure.
 }
