@@ -4,12 +4,6 @@ context("Tests for `DGEList` manipulation functions")
 
 ###############################################################################
 
-get_dge1 <- function(add_genes = FALSE) {
-  dge(matrix(1:10, nrow = 5), add_genes = add_genes)
-}
-
-###############################################################################
-
 test_that("filter_by_read_count: Valid input", {
   expect_equal(
     object = filter_by_read_count(get_dge1()),

@@ -25,3 +25,11 @@ dge <- function(m, add_genes = FALSE) {
 }
 
 ###############################################################################
+
+get_dge1 <- function(add_genes = FALSE) {
+  # nolint start
+  dge(matrix(1:10, nrow = 5), add_genes = add_genes)
+  # nolint end
+}
+
+###############################################################################
