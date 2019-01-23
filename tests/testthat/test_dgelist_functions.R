@@ -4,7 +4,7 @@ context("Tests for `DGEList` manipulation functions")
 
 ###############################################################################
 
-.dge <- function(m, add_genes = FALSE) {
+dge <- function(m, add_genes = FALSE) {
   if (is.null(dimnames(m))) {
     features <- paste0("g", seq(nrow(m)))
     samples <- paste0("s", seq(ncol(m)))
@@ -21,7 +21,7 @@ context("Tests for `DGEList` manipulation functions")
 }
 
 get_dge1 <- function(add_genes = FALSE) {
-  .dge(matrix(1:10, nrow = 5), add_genes = add_genes)
+  dge(matrix(1:10, nrow = 5), add_genes = add_genes)
 }
 
 ###############################################################################
@@ -40,7 +40,7 @@ test_that("filter_by_read_count: Valid input", {
   # passing feature
   expect_equal(
     object = filter_by_read_count(get_dge1(), threshold = 3),
-    expected = .dge(get_dge1()$counts[3:5, ]),
+    expected = dge(get_dge1()$counts[3:5, ]),
     info = paste(
       "[[1:5], [6:10]] : Keep only rows where every entry is >= 3 (ie, 3:5)"
     )
@@ -56,7 +56,7 @@ test_that("filter_by_read_count: Valid input", {
       get_dge1(),
       threshold = 1.0e5, count_type = "cpm"
     ),
-    expected = .dge(get_dge1()$counts[2:5, ]),
+    expected = dge(get_dge1()$counts[2:5, ]),
     info = paste(
       "[[1:5], [6:10]] : Keep only rows where cpm >= 10^5 (ie, 2:5)"
     )
@@ -69,7 +69,7 @@ test_that("filter_by_read_count: Valid input", {
       get_dge1(),
       threshold = 9, fraction_of_samples = 0.4
     ),
-    expected = .dge(get_dge1()$counts[4:5, ]),
+    expected = dge(get_dge1()$counts[4:5, ]),
     info = paste(
       "[[1:5], [6:10]] : Keep only rows where >= 40% samples have >= 9",
       "coverage (ie, 4:5)"
@@ -83,7 +83,7 @@ test_that("filter_by_read_count: Valid input", {
       get_dge1(),
       threshold = 4.5, use_sample_average = TRUE
     ),
-    expected = .dge(get_dge1()$counts[2:5, ]),
+    expected = dge(get_dge1()$counts[2:5, ]),
     info = paste(
       "[[1:5], [6:10]] : Keep only rows where average count >= 4.5 (ie, 2:5)"
     )
@@ -97,7 +97,7 @@ test_that("filter_by_read_count: Valid input", {
       get_dge1(add_genes = TRUE),
       threshold = 4
     ),
-    expected = .dge(
+    expected = dge(
       get_dge1()$counts[4:5, ],
       add_genes = TRUE
     ),
