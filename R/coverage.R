@@ -68,12 +68,6 @@ runner_k_covered <- function(mat, k, lambda) {
 #' @export
 #'
 which_k_covered <- function(mat, k, fraction_of_samples = 1) {
-  stopifnot(
-    length(fraction_of_samples) == 1 &&
-      fraction_of_samples >= 0 &&
-      fraction_of_samples <= 1
-  )
-
   how_many <- function(m) {
     rowSums(m)
   }

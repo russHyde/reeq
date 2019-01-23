@@ -85,24 +85,6 @@ test_that("which_k_covered", {
       "samples"
     )
   )
-
-  Map(
-    function(fraction, info) {
-      expect_error(
-        object = which_k_covered(
-          get_t2(),
-          k = 1, fraction_of_samples = fraction
-        ),
-        info = info
-      )
-    },
-    fraction = list(c(0.4, 0.6), -1, 1.1),
-    info = list(
-      "`fraction_of_samples` should be a single value",
-      "`fraction_of_samples` should be non-negative",
-      "`fraction_of_samples` should be <= 1"
-    )
-  )
 })
 
 ###############################################################################
