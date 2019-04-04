@@ -77,16 +77,31 @@ filter_by_read_count <- function(dge,
 #' Ensures that the feature-id / gene-id matches up between the provided
 #' data-frame and the existing `DGEList`
 #'
-#' @return a DGEList
+#' @param        dge           A DGEList
+#' @param        annotations   A data-frame to either use as the `genes` entry
+#'   or to append to the `genes` entry of the DGEList. Will match its
+#'   `feature_id` column against the feature ordering in the DGEList.
+#' @param        feature_id    Which column of `annotations` contains the
+#'   IDs for the features (as used in the rownames of the DGEList).
+#'
+#' @return       a DGEList
 #'
 #' @export
 
 append_feature_annotations <- function(dge,
                                        annotations,
-                                       feature_id = "feature_id",
-                                       ...) {
-  dge$genes <- annotations[match(annotations$feature_id, rownames(dge)), ]
-  rownames(dge$genes) <- rownames(dge)
+                                       feature_id = "feature_id") {
+  genes <- if(is.null(dge$genes)){
+    annotations
+  } else {
+    merge(
+      dge$genes, annotations, by = "feature_id"
+    )
+  }
 
+  genes <- genes[match(genes$feature_id, rownames(dge)), ]
+  rownames(genes) <- rownames(dge)
+
+  dge$genes <- genes
   dge
 }

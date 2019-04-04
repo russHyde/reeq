@@ -120,10 +120,11 @@ test_that("filter_by_read_count: Invalid input", {
 ###############################################################################
 
 # Checklist:
-# - no feature-data in DGEList
-# - feature-data of DGEList contains more features than the new feature-data
-# - a tibble can be passed as the new feature-data
-# - the DGEList does not have a feature_id column
+# - [+] no feature-data in DGEList
+# - [] feature_id column present in both DGEList and feature_id
+# - [] feature-data of DGEList contains more features than the new feature-data
+# - [] a tibble can be passed as the new feature-data
+# - [] the DGEList does not have a feature_id column
 # -
 
 test_that("A genes data-frame can be appended, and appended to", {
@@ -151,8 +152,22 @@ test_that("A genes data-frame can be appended, and appended to", {
       feature_id = paste0("g", 1:5),
       some_annotation = 200,
       row.names = paste0("g", 1:5)
-    )
+    ),
+    info = "no feature-data in DGEList"
   )
 
   # Feature data can be appended:
+  expect_equal(
+    object = append_feature_annotations(
+      dge_with_genes, features, "feature_id"
+    )[["genes"]],
+    expected = .df(
+      feature_id = paste0("g", 1:5),
+      length = 10,
+      some_annotation = 200,
+      row.names = paste0("g", 1:5)
+    ),
+    info = "named feature-ID column present in both DGEList and feature data"
+  )
+
 })
