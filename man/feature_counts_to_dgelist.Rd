@@ -2,7 +2,8 @@
 % Please edit documentation in R/feature_counts.R
 \name{feature_counts_to_dgelist}
 \alias{feature_counts_to_dgelist}
-\title{Combine a list of feature-counts data-frames into an `edgeR` `DGEList`}
+\title{Convert a `data.frame` containing feature-count data into an
+  `edgeR::DGEList`}
 \usage{
 feature_counts_to_dgelist(fcounts_df, sample_df, id_column = NULL, ...)
 }
@@ -35,5 +36,6 @@ Note that these should be ordered according to the sample-ordering in
 `fcounts_df` (if this differs from that in `sample_df`).}
 }
 \description{
-Combine a list of feature-counts data-frames into an `edgeR` `DGEList`
+Convert a `data.frame` containing feature-count data into an
+  `edgeR::DGEList`
 }

@@ -5,8 +5,8 @@
 \title{Import read counts from a set of featureCounts files and combine them into
 a single `data.frame`}
 \usage{
-read_feature_counts(files, sample_ids, comment = "#", col_types = "cii",
-  progress = FALSE)
+read_feature_counts(files, sample_ids, comment = "#",
+  col_types = "cii", progress = FALSE)
 }
 \arguments{
 \item{files}{A vector of file-paths. Each should be an output

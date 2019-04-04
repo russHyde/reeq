@@ -4,8 +4,8 @@
 \alias{filter_by_read_count}
 \title{filter_by_read_count}
 \usage{
-filter_by_read_count(dge, threshold = 0, count_type = c("counts", "cpm"),
-  fraction_of_samples = 1, use_sample_average = FALSE,
+filter_by_read_count(dge, threshold = 0, count_type = c("counts",
+  "cpm"), fraction_of_samples = 1, use_sample_average = FALSE,
   keep_lib_sizes = FALSE)
 }
 \arguments{
@@ -33,13 +33,8 @@ the average of the value across a row is >= the `threshold`? If this is
 `TRUE` then the `fraction_of_samples` value is ignored. Default: `FALSE`.}
 
 \item{keep_lib_sizes}{Boolean. Indicates whether library-sizes
-  should be recomputed for each sample after any features have been filtered
-  out.
-
-TODO: find a way to import just the subsetting method for `DGEList`; I had
-to import the whole of `edgeR` just so I could do `dge[keep_rows, ]`. This
-might cause problems with the `edgeR` namespace swamping the rest of the
-namespace for this package.}
+should be recomputed for each sample after any features have been filtered
+out. Passed through to `edgeR` subsetting function.}
 }
 \description{
 filter_by_read_count
