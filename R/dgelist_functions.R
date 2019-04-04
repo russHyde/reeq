@@ -69,20 +69,30 @@ filter_by_read_count <- function(dge,
 
 ###############################################################################
 
-#' Merge a table of additional feature-data into the feature-data (`$genes`) of
-#' a `DGEList`
+#' Add new columns from a table of feature-data into the feature-data
+#' (`$genes`) of a `DGEList`
 #'
-#' If the `$genes` entry is undefined, add the feature data as the genes entry
+#' If the `DGEList$genes` entry is undefined, the feature data is added as the
+#' genes entry; otherwise the new columns are appended to the RHS of the
+#' existing genes entry.
 #'
 #' Ensures that the feature-id / gene-id matches up between the provided
 #' data-frame and the existing `DGEList`
+#'
+#' The column named by `feature_id` must be present in the `annotations` data
+#' frame. If that column is present in the $genes entry of `dge`, matching will
+#' be done on that column, otherwise, matching will be done on the rownames of
+#' the DGEList.
 #'
 #' @param        dge           A DGEList
 #' @param        annotations   A data-frame to either use as the `genes` entry
 #'   or to append to the `genes` entry of the DGEList. Will match its
 #'   `feature_id` column against the feature ordering in the DGEList.
 #' @param        feature_id    Which column of `annotations` contains the
-#'   IDs for the features (as used in the rownames of the DGEList).
+#'   IDs for the features. The contents of this column will be matched against
+#'   a column of `dge$genes` - this is preferentially a column of the same name
+#'   but, if that colname is absent from `dge$genes`, then the rownames of the
+#'   DGEList will be used.
 #'
 #' @return       a DGEList
 #'
@@ -91,15 +101,40 @@ filter_by_read_count <- function(dge,
 append_feature_annotations <- function(dge,
                                        annotations,
                                        feature_id = "feature_id") {
-  genes <- if(is.null(dge$genes)){
-    annotations
+  stopifnot(is(dge, "DGEList"))
+  stopifnot(
+    is.data.frame(annotations) && feature_id %in% colnames(annotations)
+  )
+
+  # We preferentially match on the feature_id of dge$genes if it exists;
+  #   otherwise we match the feature_id column of annotations with the rownames
+  #   of dge.
+  feature_target <- if (
+    !is.null(dge$genes) && feature_id %in% colnames(dge$genes)
+  ) {
+    dge[["genes"]][[feature_id]]
   } else {
-    merge(
-      dge$genes, annotations, by = "feature_id"
-    )
+    rownames(dge)
   }
 
-  genes <- genes[match(genes$feature_id, rownames(dge)), ]
+  # Get a reordering of `annotations` to match the row-order of `dge`.
+  m <- match(feature_target, annotations[[feature_id]])
+
+  # Extract all novel columns from the annotations dataset, reordering the rows
+  #   to match the dge dataset. Append these novel columns to the dge dataset's
+  #   `genes` dataframe (initialising if necessary).
+  genes <- if (is.null(dge$genes)) {
+    annotations[m, , drop = FALSE]
+  } else {
+    cols_to_add <- setdiff(
+      colnames(annotations),
+      colnames(dge$genes)
+    )
+    cbind(
+      dge$genes,
+      annotations[m, cols_to_add, drop = FALSE]
+    )
+  }
   rownames(genes) <- rownames(dge)
 
   dge$genes <- genes
