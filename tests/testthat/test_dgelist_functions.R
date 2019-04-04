@@ -118,3 +118,41 @@ test_that("filter_by_read_count: Invalid input", {
 
 
 ###############################################################################
+
+# Checklist:
+# - no feature-data in DGEList
+# - feature-data of DGEList contains more features than the new feature-data
+# - a tibble can be passed as the new feature-data
+# - the DGEList does not have a feature_id column
+# -
+
+test_that("A genes data-frame can be appended, and appended to", {
+  # Features are "g1" to "g5"; columns are "feature_id" and "length"
+  dge_without_genes <- get_dge1(add_genes = FALSE)
+  dge_with_genes <- get_dge1(add_genes = TRUE)
+
+  # Feature data can be added to a DGEList that has no `genes` dataframe
+
+  features <- .df(
+    feature_id = paste0("g", 5:1),
+    some_annotation = 200
+  )
+
+  expect_is(
+    append_feature_annotations(dge_without_genes, features, "feature_id"),
+    "DGEList"
+  )
+
+  expect_equal(
+    object = append_feature_annotations(
+      dge_without_genes, features, "feature_id"
+    )[["genes"]],
+    expected = .df(
+      feature_id = paste0("g", 1:5),
+      some_annotation = 200,
+      row.names = paste0("g", 1:5)
+    )
+  )
+
+  # Feature data can be appended:
+})

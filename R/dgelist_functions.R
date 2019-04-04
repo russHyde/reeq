@@ -68,3 +68,25 @@ filter_by_read_count <- function(dge,
 }
 
 ###############################################################################
+
+#' Merge a table of additional feature-data into the feature-data (`$genes`) of
+#' a `DGEList`
+#'
+#' If the `$genes` entry is undefined, add the feature data as the genes entry
+#'
+#' Ensures that the feature-id / gene-id matches up between the provided
+#' data-frame and the existing `DGEList`
+#'
+#' @return a DGEList
+#'
+#' @export
+
+append_feature_annotations <- function(dge,
+                                       annotations,
+                                       feature_id = "feature_id",
+                                       ...) {
+  dge$genes <- annotations[match(annotations$feature_id, rownames(dge)), ]
+  rownames(dge$genes) <- rownames(dge)
+
+  dge
+}
