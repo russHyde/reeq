@@ -118,3 +118,94 @@ test_that("filter_by_read_count: Invalid input", {
 
 
 ###############################################################################
+
+# Checklist:
+# - [+] no feature-data in DGEList
+# - [+] feature_id column present in both DGEList and feature_id
+# - [+] the DGEList does not have a feature_id column (use rownames of the
+#   former)
+# - [] feature-data of DGEList contains more features than the new feature-data
+# - [] a tibble can be passed as the new feature-data
+# -
+
+test_that("A genes data-frame can be added, and appended-to", {
+  # Features are "g1" to "g5"; columns are "feature_id" and "length"
+  dge_without_genes <- get_dge1(add_genes = FALSE)
+  dge_with_genes <- get_dge1(add_genes = TRUE)
+
+  # Feature data can be added to a DGEList that has no `genes` dataframe
+
+  features <- .df(
+    feature_id = paste0("g", 5:1),
+    some_annotation = 200
+  )
+
+  expect_is(
+    append_feature_annotations(dge_without_genes, features, "feature_id"),
+    "DGEList"
+  )
+
+  expect_equal(
+    object = append_feature_annotations(
+      dge_without_genes, features, "feature_id"
+    )[["genes"]],
+    expected = .df(
+      feature_id = paste0("g", 1:5),
+      some_annotation = 200,
+      row.names = paste0("g", 1:5)
+    ),
+    info = "no feature-data in DGEList"
+  )
+
+  # Feature data can be appended to an existing `genes` entry:
+  features1 <- .df(
+    my_id = paste0("g", c(3, 4, 2, 5, 1)),
+    my_annotation = 200
+  )
+  expect_equal(
+    object = append_feature_annotations(
+      dge_with_genes, features1, "my_id"
+    )[["genes"]],
+    expected = .df(
+      feature_id = paste0("g", 1:5),
+      length = 10,
+      my_id = paste0("g", 1:5),
+      my_annotation = 200,
+      row.names = paste0("g", 1:5)
+    ),
+    info = paste(
+      "feature IDs are matched on DGE rownames if feature-ID column is",
+      "absent from DGE$genes"
+    )
+  )
+
+  # nolint start
+  dge_with_mismatching_rownames_and_feature_ids <- get_dge1(add_genes = TRUE)
+  dge_with_mismatching_rownames_and_feature_ids$genes <- dplyr::mutate(
+    dge_with_mismatching_rownames_and_feature_ids$genes,
+    feature_id = letters[1:5]
+  )
+  # nolint end
+
+  features2 <- .df(
+    feature_id = letters[5:1],
+    annotation = 1234
+  )
+
+  expect_equal(
+    object = append_feature_annotations(
+      dge_with_mismatching_rownames_and_feature_ids, features2, "feature_id"
+    )[["genes"]],
+    expected = .df(
+      feature_id = letters[1:5],
+      length = 10,
+      annotation = 1234,
+      row.names = paste0("g", 1:5)
+    ),
+    info = paste(
+      "feature-IDs are matched by common feature_id column if it is present",
+      "in both DGEList$genes and feature data (preferentialy over rownames of",
+      "$genes)"
+    )
+  )
+})
