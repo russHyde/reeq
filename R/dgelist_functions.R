@@ -140,3 +140,25 @@ append_feature_annotations <- function(dge,
   dge$genes <- genes
   dge
 }
+
+###############################################################################
+
+#' Add (or replace) an offset matrix in DGEList
+#'
+#' Trivial implementation, but useful in pipelines.
+#'
+#' @param        dge           A DGEList.
+#' @param        offset        A matrix of the same dimensions as the counts in
+#'   `dge`.
+#'
+#' @return       A DGEList.
+#' @export
+
+set_offset <- function(dge, offset) {
+  stopifnot(methods::is(dge, "DGEList"))
+  stopifnot(is.numeric(offset) && is.matrix(offset))
+  stopifnot(all(dim(offset) == dim(dge)))
+
+  dge$offset <- offset
+  dge
+}

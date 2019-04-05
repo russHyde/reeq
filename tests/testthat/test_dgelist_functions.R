@@ -209,3 +209,53 @@ test_that("A genes data-frame can be added, and appended-to", {
     )
   )
 })
+
+###############################################################################
+
+# Checklist:
+# - [+] returns a DGEList
+# - [+] error if the dimensions of the offset don't match the counts matrix
+# - [+] can add a dim-matched offset to a DGEList
+# - [+] error if not a DGEList
+# - [+] error if not a numeric matrix
+test_that("An offset matrix can be added to a DGEList", {
+  dge <- get_dge1()
+  new_offset <- edgeR::getCounts(dge) * -1
+
+  expect_is(
+    set_offset(dge, new_offset),
+    "DGEList"
+  )
+
+  expect_equal(
+    edgeR::getCounts(set_offset(dge, new_offset)),
+    edgeR::getCounts(dge),
+    info = "set_offset should not affect the counts matrix"
+  )
+
+  expect_error(
+    set_offset(dge, cbind(new_offset, new_offset)),
+    info = "offset matrix should have same number of cols as dge"
+  )
+
+  expect_error(
+    set_offset(dge, rbind(new_offset, new_offset)),
+    info = "offset matrix should have same number of rows as dge"
+  )
+
+  expect_equal(
+    edgeR::getOffset(set_offset(dge, new_offset)),
+    new_offset,
+    info = "can add a dimension-matched offset matrix to a DGEList"
+  )
+
+  expect_error(
+    set_offset(list(), new_offset),
+    info = "input to set_offset should be a DGEList"
+  )
+
+  expect_error(
+    set_offset(dge, "not a numeric matrix"),
+    info = "`offset` should be a numeric matrix"
+  )
+})
