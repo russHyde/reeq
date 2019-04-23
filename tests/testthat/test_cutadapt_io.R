@@ -4,9 +4,28 @@ context("Tests for cutadapt logfile importing in `reeq`")
 
 ###############################################################################
 
-# cutadapt parser tests
+# format conversion tests
 
 ###############################################################################
+
+#
+
+test_that("convert comma-separated numbers to actual numbers", {
+  expect_equal(
+    condense_comma_separated_numbers(c("57", "23.4")),
+    c(57, 23.4),
+    info = "Input strings don't contain commas, should just convert to numeric"
+  )
+  expect_equivalent(
+    condense_comma_separated_numbers(
+      c("114,728", "2,923", "57", "not,a,number")
+    ),
+    c(114728, 2923, 57, NA),
+    info = "Conversion of string-numbers containing commas to numeric"
+  )
+})
+
+#
 
 test_that("parse_colon_separated_lines", {
   expect_error(
@@ -71,6 +90,12 @@ test_that("parse_colon_separated_lines", {
     )
   )
 })
+
+###############################################################################
+
+# cutadapt parser tests
+
+###############################################################################
 
 test_that("cutadapt summary-text parser", {
   expect_error(

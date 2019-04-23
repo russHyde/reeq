@@ -1,3 +1,15 @@
+#' Converts comma-containing strings into numbers
+#'
+#' @param        x             A vector of comma-containing strings, to be
+#'   converted to numbers.
+#'
+#' @importFrom   readr         parse_number
+
+condense_comma_separated_numbers <- function(
+                                             x) {
+  suppressWarnings(readr::parse_number(x))
+}
+
 #' parse_colon_separated_lines
 #'
 #' Split each entry in a vector on the first colon. Strips flanking whitespace
