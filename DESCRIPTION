@@ -23,4 +23,5 @@ Imports: magrittr,
     readr,
     purrr,
     biomaRt,
-    tibble
+    tibble,
+    stringr
