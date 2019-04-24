@@ -18,6 +18,15 @@ extract_cutadapt_summary <- function(x) {
   # `x` is the bare text from a cutadapt logfile
 
   # return the bare text for the `summary` section of the logfile
+
+  stopifnot(is.character(x) && length(x) == 1)
+  # Extract the "Summary" section of the file
+  without_header <- gsub("^.*=== Summary ===\n", "", x)
+  without_footer <- gsub(
+    "\n\n=== First read: Adapter 1 ===.*$", "", without_header
+  )
+
+  without_footer
 }
 
 #' Takes the 'summary' text from a cutadapt log-file and extracts the number of
