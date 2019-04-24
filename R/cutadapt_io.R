@@ -63,17 +63,6 @@ parse_cutadapt_summary <- function(x) {
 
 ###############################################################################
 
-#' Converts comma-containing strings into numbers
-#'
-#' @param        x             A vector of comma-containing strings, to be
-#'   converted to numbers.
-#'
-#' @importFrom   readr         parse_number
-
-condense_comma_separated_numbers <- function(x) {
-  suppressWarnings(readr::parse_number(x))
-}
-
 #' parse_numeric_fields
 #'
 #' @param        x             A single character string. This should be
@@ -89,26 +78,36 @@ condense_comma_separated_numbers <- function(x) {
 #'   for the fields in \code{field}.
 #'
 #' @importFrom    tidyr        spread_
-#'
-#' @export
+#' @importFrom    readr        parse_number
 
 parse_numeric_fields <- function(x, fieldnames) {
   # `x` should be bare text, not split
   stopifnot(is.character(x) && length(x) == 1)
   stopifnot(all.equal(colnames(fieldnames), c("expected", "output")))
 
+  extract_numeric_lines <- function(x) {
+    # split some text into distinct lines, and keep only those lines with a
+    # numeric statistic on the RHS of a colon
+    x %>%
+      strsplit("\n") %>%
+      unlist() %>%
+      stringr::str_subset(":.*[[:digit:]].*")
+  }
+
+  reformat_numeric_lines <- function(x) {
+    # drop trailing
+    # - parenthesised, percent eg, "some_stat : 123 (0.5%)"
+    # - `bp` basepair indicators eg, "Remaining read pairs : 123 bp"
+    # - percent signs eg, "percentage_statistic : 98.1%"
+    x %>%
+      stringr::str_replace("\\([[:graph:]]*%\\)$", "") %>%
+      stringr::str_replace("bp[[:blank:]]*$", "") %>%
+      stringr::str_replace("%[[:blank:]]*$", "")
+  }
+
   lines_as_df <- x %>%
-    # extract separate lines
-    strsplit("\n") %>%
-    unlist() %>%
-    # keep only lines with digits on RHS of a colon
-    stringr::str_subset(":.*[[:digit:]].*") %>%
-    # drop trailing, parenthesised, percent
-    stringr::str_replace("\\([[:graph:]]*%\\)$", "") %>%
-    # drop trailing `bp` basepair indicators
-    stringr::str_replace("bp[[:blank:]]*$", "") %>%
-    # drop trailing percent signs
-    stringr::str_replace("%[[:blank:]]*$", "") %>%
+    extract_numeric_lines() %>%
+    reformat_numeric_lines() %>%
     # convert into key-value (string -> string) pairs
     parse_colon_separated_lines()
 
@@ -120,12 +119,11 @@ parse_numeric_fields <- function(x, fieldnames) {
     )
   }
 
-  results <- lines_as_df %>%
+  lines_as_df %>%
     dplyr::mutate(field = fieldnames$output) %>%
-    dplyr::mutate_(val = ~condense_comma_separated_numbers(value)) %>%
-    dplyr::select_(.dots = c("field", "val"))
-
-  tidyr::spread_(results, key_col = "field", value_col = "val")
+    dplyr::mutate_(val = ~readr::parse_number(value)) %>%
+    dplyr::select_(.dots = c("field", "val")) %>%
+    tidyr::spread_(key_col = "field", value_col = "val")
 }
 
 #' parse_colon_separated_lines
