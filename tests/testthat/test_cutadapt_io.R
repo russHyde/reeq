@@ -116,11 +116,81 @@ test_that("parse_numeric_fields from a cutadapt-log text", {
       "extract numeric fields from the summary section of a cutadapt log"
     )
   )
+
+  expect_error(
+    object = parse_numeric_fields(
+      x = "observed_field_name : 123",
+      fieldnames = tibble::tibble(
+        expected = c("observed_field_name", "missing_field_name"),
+        output = c("observed_field_name", "missing_field_name")
+      )
+    ),
+    info = paste(
+      "all fields that are requested by the user should be present in the",
+      "cutadapt log-summary"
+    )
+  )
+
+  expect_error(
+    object = parse_numeric_fields(
+      x = "requested_field_name : 123\nunrequested_field_name : 456",
+      fieldnames = tibble::tibble(
+        expected = c("requested_field_name"),
+        output = c("requested_field_name")
+      )
+    ),
+    info = paste(
+      "all numeric fields in the cutadapt log-summary should have a",
+      "corresponding entry in fieldnames"
+    )
+  )
 })
 
 ###############################################################################
 
 # cutadapt parser tests
+
+###############################################################################
+
+test_that("cutadapt summary extractor", {
+  prefix <- "This is cutadapt 1.13 with Python 3.6.7
+Blah blah blah
+
+=== Summary ===
+"
+
+  summary_section <- "Total read pairs processed:         14,605,217
+  Read 1 with adapter:                 482,313 (3.3%)
+  Read 2 with adapter:               1,012,028 (6.9%)
+Pairs that were too short:               8,529 (0.1%)
+Pairs with too many N:                   3,241 (0.0%)
+Pairs written (passing filters):    14,593,447 (99.9%)
+
+Total basepairs processed: 2,205,292,673 bp
+  Read 1: 1,103,006,677 bp
+  Read 2: 1,102,285,996 bp
+Total written (filtered):  2,191,574,660 bp (99.4%)
+  Read 1: 1,093,901,386 bp
+  Read 2: 1,097,673,274 bp"
+
+  suffix <- "
+
+=== First read: Adapter 1 ===
+
+Sequence: AAAAAAAAAAAAA..; Type: regular 3'; Length: 76; Trimmed: 173335 times.
+
+Blah blah blah
+"
+
+  text <- paste0(prefix, summary_section, suffix, sep = "\n")
+
+  expect_equal(
+    extract_cutadapt_summary(text),
+    summary_section,
+    info = "Extract the summary section from the text in a cutadapt log"
+  )
+})
+
 
 ###############################################################################
 

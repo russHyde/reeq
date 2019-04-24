@@ -112,8 +112,8 @@ parse_numeric_fields <- function(x, fieldnames) {
     parse_colon_separated_lines()
 
   if (!isTRUE(all.equal(lines_as_df$field, fieldnames$expected))) {
-    print(setdiff(lines_as_df$field, fieldnames$expected))
-    print(setdiff(fieldnames$expected, lines_as_df$field))
+    message(setdiff(lines_as_df$field, fieldnames$expected))
+    message(setdiff(fieldnames$expected, lines_as_df$field))
     stop(
       "All numeric fields from the text should be in the fieldnames dataframe"
     )
@@ -141,7 +141,7 @@ parse_numeric_fields <- function(x, fieldnames) {
 #'
 #' @importFrom   dplyr         mutate_all
 #' @importFrom   magrittr      %>%   set_colnames
-#' @importFrom   stringr       str_split_fixed   str_replace
+#' @importFrom   stringr       str_split_fixed
 #' @importFrom   tibble        as_tibble
 #'
 
@@ -155,18 +155,12 @@ parse_colon_separated_lines <- function(x) {
   # die if any of the input vector lacks a colon
   stopifnot(all(grepl(":", x)))
 
-  strip_flanking_blanks <- function(x) {
-    x %>%
-      stringr::str_replace("^[[:blank:]]+", "") %>%
-      stringr::str_replace("[[:blank:]]+$", "")
-  }
-
+  # Split on the first colon
+  # Join the values into a two-column dataframe
+  # Strip all leading or trailing whitespace:
   x %>%
-    # Split on the first colon
     stringr::str_split_fixed(":", n = 2) %>%
-    # Join the values into a two-column dataframe
     magrittr::set_colnames(c("field", "value")) %>%
     tibble::as_tibble() %>%
-    # Strip all leading or trailing whitespace:
-    dplyr::mutate_all(strip_flanking_blanks)
+    dplyr::mutate_all(trimws)
 }
