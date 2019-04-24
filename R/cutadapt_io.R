@@ -2,17 +2,44 @@
 
 # ---- Main `cutadapt` parser
 
+#' Extract the basepair/readpair counts from the 'summary' section in the text
+#' from a cutadapt log-file.
+#'
+#' @param        x             A filename. This should be a cutadapt logfile.
+#'   The function dies if this is not an existing file or if more than one
+#'   entry is present in \code{x}.
+#'
+#' @importFrom   readr         read_file
+#' @export
+#'
+
 import_cutadapt_summary <- function(x) {
   # x is a file path
 
   # validate
+  stopifnot(length(x) == 1)
+  stopifnot(file.exists(file.path(x)))
 
   # read
+  log_txt <- readr::read_file(x)
 
   # parse the cutadapt logfile
+  summary_txt <- extract_cutadapt_summary(log_txt)
 
   # convert the summary-data to a tibble and return
+  parse_cutadapt_summary(summary_txt)
 }
+
+#' Extract the 'summary' section from the text from a cutadapt log-file.
+#'
+#' Returns a single string.
+#'
+#' Not exported.
+#'
+#' @param        x             The raw text from a cutadapt logfile. This fails
+#'   if more than one text entry is present, so the user should not split the
+#'   file on newlines or anything like that before calling this function.
+#'
 
 extract_cutadapt_summary <- function(x) {
   # `x` is the bare text from a cutadapt logfile
@@ -40,8 +67,8 @@ extract_cutadapt_summary <- function(x) {
 #'
 
 parse_cutadapt_summary <- function(x) {
-  # Should x be newline-stripped / bareline stripped /
-  #   have the "=== SUMMARY ===" line removed prior to calling this?
+  # `x` should be newline-stripped / bareline stripped /
+  #   have the "=== SUMMARY ===" line removed prior to calling this
   if (missing(x)) {
     stop("`x` should be defined in `parse_cutadapt_summary`")
   }
@@ -86,8 +113,11 @@ parse_cutadapt_summary <- function(x) {
 #'   the entries of \code{val} are the values found within the text \code{x}
 #'   for the fields in \code{field}.
 #'
-#' @importFrom    tidyr        spread_
-#' @importFrom    readr        parse_number
+#' @importFrom   tidyr        spread_
+#' @importFrom   readr        parse_number
+#' @importFrom   stringr      str_subset   str_replace
+#' @importFrom   dplyr        mutate   mutate_   select_
+#'
 
 parse_numeric_fields <- function(x, fieldnames) {
   # `x` should be bare text, not split
