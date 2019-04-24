@@ -15,7 +15,8 @@ BugReports: https://github.com/russHyde/reeq/issues
 Suggests: testthat,
     covr,
     mockery
-Imports: magrittr,
+Imports: 
+    magrittr,
     edgeR,
     Biobase,
     methods,
@@ -24,4 +25,5 @@ Imports: magrittr,
     purrr,
     biomaRt,
     tibble,
-    stringr
+    stringr,
+    tidyr

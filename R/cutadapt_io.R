@@ -1,3 +1,68 @@
+###############################################################################
+
+# ---- Main `cutadapt` parser
+
+import_cutadapt_summary <- function(x) {
+  # x is a file path
+
+  # validate
+
+  # read
+
+  # parse the cutadapt logfile
+
+  # convert the summary-data to a data_frame and return
+}
+
+extract_cutadapt_summary <- function(x) {
+  # `x` is the bare text from a cutadapt logfile
+
+  # return the bare text for the `summary` section of the logfile
+}
+
+#' Takes the 'summary' text from a cutadapt log-file and extracts the number of
+#' readpairs / basepairs that were input and which pass/fail various filters.
+#'
+#' Not exported
+#'
+#' @param        x             Text from the summary section of a cutadapt log.
+#'
+#' @importFrom   tibble        data_frame
+#'
+
+parse_cutadapt_summary <- function(x) {
+  # Should x be newline-stripped / bareline stripped /
+  #   have the "=== SUMMARY ===" line removed prior to calling this?
+  if (missing(x)) {
+    stop("`x` should be defined in `parse_cutadapt_summary`")
+  }
+
+  fieldnames <- tibble::data_frame(
+    expected = c(
+      "Total read pairs processed", "Read 1 with adapter",
+      "Read 2 with adapter",
+      "Pairs that were too short", "Pairs written (passing filters)",
+      "Total basepairs processed", "Read 1", "Read 2",
+      "Total written (filtered)", "Read 1", "Read 2"
+    ),
+    output = c(
+      "rp_input", "r1_with_adapter",
+      "r2_with_adapter",
+      "rp_too_short", "rp_output",
+      "bp_input", "bp_input_r1", "bp_input_r2",
+      "bp_output", "bp_output_r1", "bp_output_r2"
+    )
+  )
+
+  parse_numeric_fields(x, fieldnames)
+}
+
+###############################################################################
+
+# ---- Helpers
+
+###############################################################################
+
 #' Converts comma-containing strings into numbers
 #'
 #' @param        x             A vector of comma-containing strings, to be
@@ -5,9 +70,62 @@
 #'
 #' @importFrom   readr         parse_number
 
-condense_comma_separated_numbers <- function(
-                                             x) {
+condense_comma_separated_numbers <- function(x) {
   suppressWarnings(readr::parse_number(x))
+}
+
+#' parse_numeric_fields
+#'
+#' @param        x             A single character string. This should be
+#'   newline-separated. Key-Value pairs are assumed to be colon-separated
+#'   and any line that is, is converted into a key-value pair.
+#' @param        fieldnames    A dataframe containing two columns: expected and
+#'   output. The \code{expected} gives the fieldnames that are expected to be
+#'   present in the text (\code{x}); \code{output} gives the names that these
+#'   fields should be converted to in the output dataframe
+#'
+#' @return       A dataframe. Contains columns field and val (? others) where
+#'   the entries of \code{val} are the values found within the text \code{x}
+#'   for the fields in \code{field}.
+#'
+#' @importFrom    tidyr        spread_
+#'
+#' @export
+
+parse_numeric_fields <- function(x, fieldnames) {
+  # `x` should be bare text, not split
+  stopifnot(is.character(x) && length(x) == 1)
+  stopifnot(all.equal(colnames(fieldnames), c("expected", "output")))
+
+  lines_as_df <- x %>%
+    # extract separate lines
+    strsplit("\n") %>%
+    unlist() %>%
+    # keep only lines with digits on RHS of a colon
+    stringr::str_subset(":.*[[:digit:]].*") %>%
+    # drop trailing, parenthesised, percent
+    stringr::str_replace("\\([[:graph:]]*%\\)$", "") %>%
+    # drop trailing `bp` basepair indicators
+    stringr::str_replace("bp[[:blank:]]*$", "") %>%
+    # drop trailing percent signs
+    stringr::str_replace("%[[:blank:]]*$", "") %>%
+    # convert into key-value (string -> string) pairs
+    parse_colon_separated_lines()
+
+  if (!isTRUE(all.equal(lines_as_df$field, fieldnames$expected))) {
+    print(setdiff(lines_as_df$field, fieldnames$expected))
+    print(setdiff(fieldnames$expected, lines_as_df$field))
+    stop(
+      "All numeric fields from the text should be in the fieldnames dataframe"
+    )
+  }
+
+  results <- lines_as_df %>%
+    dplyr::mutate(field = fieldnames$output) %>%
+    dplyr::mutate_(val = ~condense_comma_separated_numbers(value)) %>%
+    dplyr::select_(.dots = c("field", "val"))
+
+  tidyr::spread_(results, key_col = "field", value_col = "val")
 }
 
 #' parse_colon_separated_lines
@@ -53,47 +171,4 @@ parse_colon_separated_lines <- function(x) {
     tibble::as_data_frame() %>%
     # Strip all leading or trailing whitespace:
     dplyr::mutate_all(strip_flanking_blanks)
-}
-
-#' Takes the 'summary' text from a cutadapt log-file and extracts the number of
-#' readpairs / basepairs that were input and which pass/fail various filters.
-#'
-#' Not exported
-#'
-#' @param        x             Text from the summary section of a cutadapt log.
-#'
-#' @importFrom   tibble        data_frame
-#'
-
-parse_cutadapt_summary <- function(x) {
-  # Should x be newline-stripped / bareline stripped /
-  #   have the "=== SUMMARY ===" line removed prior to calling this?
-  if (missing(x)) {
-    stop("`x` should be defined in `parse_cutadapt_summary`")
-  }
-
-  fieldnames <- tibble::data_frame(
-    expected = c(
-      "Total read pairs processed", "Read 1 with adapter",
-      "Read 2 with adapter",
-      "Pairs that were too short", "Pairs written (passing filters)",
-      "Total basepairs processed", "Read 1", "Read 2",
-      "Total written (filtered)", "Read 1", "Read 2"
-    ),
-    output = c(
-      "rp_input", "r1_with_adapter",
-      "r2_with_adapter",
-      "rp_too_short", "rp_output",
-      "bp_input", "bp_input_r1", "bp_input_r2",
-      "bp_output", "bp_output_r1", "bp_output_r2"
-    )
-  )
-
-  # parse_numeric_fields(x, fieldnames)
-  tibble::data_frame(
-    rp_input = 114728, r1_with_adapter = 2923, r2_with_adapter = 3833,
-    rp_too_short = 57, rp_output = 114671,
-    bp_input = 17254556, bp_input_r1 = 8628890, bp_input_r2 = 8625666,
-    bp_output = 17217852, bp_output_r1 = 8612728, bp_output_r2 = 8605124
-  )
 }

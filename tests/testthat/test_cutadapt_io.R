@@ -91,6 +91,51 @@ test_that("parse_colon_separated_lines", {
   )
 })
 
+#
+
+test_that("parse_numeric_fields from a cutadapt-log text", {
+
+  expect_error(
+    object = parse_numeric_fields(),
+    info = paste(
+      "`parse_numeric_fields` requires a character string (x), and a",
+      "data-frame (fieldnames)"
+    )
+  )
+
+  expect_equal(
+    object = parse_numeric_fields(
+      x = paste(
+        "   my_field_name   : 123,456.45",
+        "drop_the_trailing_percent : 12345 (0.01%)",
+        "omit_any_nonnumeric_lines : not_a_number",
+        "drop_the_trailing_bp : 987 bp   ",
+        "drop_the_percent_sign    : 10%",
+        sep = "\n"
+      ),
+      fieldnames = tibble::data_frame(
+        expected = c(
+          "my_field_name", "drop_the_trailing_percent", "drop_the_trailing_bp",
+          "drop_the_percent_sign"
+        ),
+        output = c(
+          "My_Formatted_Field", "Percent_Free_Field", "BasePair_Free_Field",
+          "No_Percent_Sign"
+        )
+      )
+    ),
+    expected = tibble::data_frame(
+      My_Formatted_Field = 123456.45,
+      Percent_Free_Field = 12345,
+      BasePair_Free_Field = 987,
+      No_Percent_Sign = 10
+    ),
+    info = paste(
+      "extract numeric fields from the summary section of a cutadapt log"
+    )
+  )
+})
+
 ###############################################################################
 
 # cutadapt parser tests
