@@ -10,7 +10,7 @@ parse_colon_separated_lines(x)
 \item{x}{Vector of colon-separated values.}
 }
 \value{
-`data_frame` with two columns: 'field' and 'value'. Any
+`tibble` with two columns: 'field' and 'value'. Any
   leading/trailing whitespace is trimmed off both the field and value.
 }
 \description{

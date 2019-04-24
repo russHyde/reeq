@@ -23,13 +23,13 @@ test_that("parse_colon_separated_lines", {
 
   expect_equal(
     object = parse_colon_separated_lines(c()),
-    expected = tibble::data_frame(
+    expected = tibble::tibble(
       field = character(0),
       value = character(0)
     ),
     info = paste(
       "parse_colon_separated_lines on an empty vector returns an empty,",
-      "2-column data_frame"
+      "2-column tibble"
     )
   )
 
@@ -37,7 +37,7 @@ test_that("parse_colon_separated_lines", {
     object = parse_colon_separated_lines(
       c("abc:123", "def:456", "ghi:some_value")
     ),
-    expected = tibble::data_frame(
+    expected = tibble::tibble(
       field = c("abc", "def", "ghi"),
       value = c("123", "456", "some_value")
     ),
@@ -50,7 +50,7 @@ test_that("parse_colon_separated_lines", {
         "  abc:   123", "\t\tdef:456", "ghi:   some_value\t\t"
       )
     ),
-    expected = tibble::data_frame(
+    expected = tibble::tibble(
       field = c("abc", "def", "ghi"),
       value = c("123", "456", "some_value")
     ),
@@ -63,7 +63,7 @@ test_that("parse_colon_separated_lines", {
     object = parse_colon_separated_lines(
       c("spacey fieldname: 123", "field: spacey value")
     ),
-    expected = tibble::data_frame(
+    expected = tibble::tibble(
       field = c("spacey fieldname", "field"),
       value = c("123", "spacey value")
     ),
@@ -95,7 +95,7 @@ test_that("parse_numeric_fields from a cutadapt-log text", {
         "drop_the_percent_sign    : 10%",
         sep = "\n"
       ),
-      fieldnames = tibble::data_frame(
+      fieldnames = tibble::tibble(
         expected = c(
           "my_field_name", "drop_the_trailing_percent", "drop_the_trailing_bp",
           "drop_the_percent_sign"
@@ -106,7 +106,7 @@ test_that("parse_numeric_fields from a cutadapt-log text", {
         )
       )
     ),
-    expected = tibble::data_frame(
+    expected = tibble::tibble(
       My_Formatted_Field = 123456.45,
       Percent_Free_Field = 12345,
       BasePair_Free_Field = 987,
@@ -146,7 +146,7 @@ Total written (filtered):     17,217,852 bp (99.8%)
 
   expect_equal(
     object = parse_cutadapt_summary(example),
-    expected = tibble::data_frame(
+    expected = tibble::tibble(
       rp_input = 114728, r1_with_adapter = 2923, r2_with_adapter = 3833,
       rp_too_short = 57, rp_output = 114671,
       bp_input = 17254556, bp_input_r1 = 8628890, bp_input_r2 = 8625666,

@@ -11,7 +11,7 @@ import_cutadapt_summary <- function(x) {
 
   # parse the cutadapt logfile
 
-  # convert the summary-data to a data_frame and return
+  # convert the summary-data to a tibble and return
 }
 
 extract_cutadapt_summary <- function(x) {
@@ -27,7 +27,7 @@ extract_cutadapt_summary <- function(x) {
 #'
 #' @param        x             Text from the summary section of a cutadapt log.
 #'
-#' @importFrom   tibble        data_frame
+#' @importFrom   tibble        tibble
 #'
 
 parse_cutadapt_summary <- function(x) {
@@ -37,7 +37,7 @@ parse_cutadapt_summary <- function(x) {
     stop("`x` should be defined in `parse_cutadapt_summary`")
   }
 
-  fieldnames <- tibble::data_frame(
+  fieldnames <- tibble::tibble(
     expected = c(
       "Total read pairs processed", "Read 1 with adapter",
       "Read 2 with adapter",
@@ -136,13 +136,13 @@ parse_numeric_fields <- function(x, fieldnames) {
 #'
 #' @param        x            Vector of colon-separated values.
 #'
-#' @return       `data_frame` with two columns: 'field' and 'value'. Any
+#' @return       `tibble` with two columns: 'field' and 'value'. Any
 #'   leading/trailing whitespace is trimmed off both the field and value.
 #'
 #' @importFrom   dplyr         mutate_all
 #' @importFrom   magrittr      %>%   set_colnames
 #' @importFrom   stringr       str_split_fixed   str_replace
-#' @importFrom   tibble        as_data_frame
+#' @importFrom   tibble        as_tibble
 #'
 
 parse_colon_separated_lines <- function(x) {
@@ -166,7 +166,7 @@ parse_colon_separated_lines <- function(x) {
     stringr::str_split_fixed(":", n = 2) %>%
     # Join the values into a two-column dataframe
     magrittr::set_colnames(c("field", "value")) %>%
-    tibble::as_data_frame() %>%
+    tibble::as_tibble() %>%
     # Strip all leading or trailing whitespace:
     dplyr::mutate_all(strip_flanking_blanks)
 }
