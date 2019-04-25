@@ -15,7 +15,7 @@ BugReports: https://github.com/russHyde/reeq/issues
 Suggests: testthat,
     covr,
     mockery
-Imports: 
+Imports:
     magrittr,
     edgeR,
     Biobase,
@@ -27,3 +27,12 @@ Imports:
     tibble,
     stringr,
     tidyr
+Collate:
+    'coverage.R'
+    'logfile_helpers.R'
+    'cutadapt_logfile_io.R'
+    'data_validity.R'
+    'dgelist_functions.R'
+    'feature_annotation.R'
+    'feature_counts.R'
+    'feature_counts_io.R'
