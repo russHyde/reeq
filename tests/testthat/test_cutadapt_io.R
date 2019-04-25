@@ -119,29 +119,15 @@ test_that("parse_numeric_fields from a cutadapt-log text", {
 
   expect_error(
     object = parse_numeric_fields(
-      x = "observed_field_name : 123",
+      x = "observed_field1 : 123\nobserved_field2 : 456",
       fieldnames = tibble::tibble(
-        expected = c("observed_field_name", "missing_field_name"),
-        output = c("observed_field_name", "missing_field_name")
-      )
-    ),
-    info = paste(
-      "all fields that are requested by the user should be present in the",
-      "cutadapt log-summary"
-    )
-  )
-
-  expect_error(
-    object = parse_numeric_fields(
-      x = "requested_field_name : 123\nunrequested_field_name : 456",
-      fieldnames = tibble::tibble(
-        expected = c("requested_field_name"),
-        output = c("requested_field_name")
+        expected = c("observed_field1"),
+        output = c("observed_field1")
       )
     ),
     info = paste(
       "all numeric fields in the cutadapt log-summary should have a",
-      "corresponding entry in fieldnames"
+      "corresponding entry in fieldnames (so they can be reformatted)"
     )
   )
 })
