@@ -56,14 +56,13 @@ extract_cutadapt_summary <- function(x) {
   without_footer
 }
 
+
 #' Takes the 'summary' text from a cutadapt log-file and extracts the number of
 #' readpairs / basepairs that were input and which pass/fail various filters.
 #'
 #' Not exported
 #'
 #' @param        x             Text from the summary section of a cutadapt log.
-#'
-#' @importFrom   tibble        tibble
 #'
 
 parse_cutadapt_summary <- function(x) {
@@ -73,22 +72,7 @@ parse_cutadapt_summary <- function(x) {
     stop("`x` should be defined in `parse_cutadapt_summary`")
   }
 
-  fieldnames <- tibble::tibble(
-    expected = c(
-      "Total read pairs processed", "Read 1 with adapter",
-      "Read 2 with adapter",
-      "Pairs that were too short", "Pairs written (passing filters)",
-      "Total basepairs processed", "Read 1", "Read 2",
-      "Total written (filtered)", "Read 1", "Read 2"
-    ),
-    output = c(
-      "rp_input", "r1_with_adapter",
-      "r2_with_adapter",
-      "rp_too_short", "rp_output",
-      "bp_input", "bp_input_r1", "bp_input_r2",
-      "bp_output", "bp_output_r1", "bp_output_r2"
-    )
-  )
+  fieldnames <- define_cutadapt_summary_renaming()
 
   parse_numeric_fields(x, fieldnames)
 }
@@ -98,6 +82,30 @@ parse_cutadapt_summary <- function(x) {
 # ---- Helpers
 
 ###############################################################################
+
+#' Define the renaming of the fields present in a cutadapt log summary section
+#'
+#' @importFrom   tibble        tribble
+#'
+
+define_cutadapt_summary_renaming <- function() {
+  tibble::tribble(
+    ~expected, ~output,
+    "Total read pairs processed", "rp_input",
+    "Read 1 with adapter", "r1_with_adapter",
+    "Read 2 with adapter", "r2_with_adapter",
+    "Pairs that were too short", "rp_too_short",
+    "Pairs that were too long", "rp_too_long",
+    "Pairs with too many N", "rp_too_many_n",
+    "Pairs written (passing filters)", "rp_output",
+    "Total basepairs processed", "bp_input",
+    "Read 1", "bp_input_r1",
+    "Read 2", "bp_input_r2",
+    "Total written (filtered)", "bp_output",
+    "Read 1", "bp_output_r1",
+    "Read 2", "bp_output_r2"
+  )
+}
 
 #' parse_numeric_fields
 #'
@@ -116,7 +124,7 @@ parse_cutadapt_summary <- function(x) {
 #' @importFrom   tidyr        spread_
 #' @importFrom   readr        parse_number
 #' @importFrom   stringr      str_subset   str_replace
-#' @importFrom   dplyr        mutate   mutate_   select_
+#' @importFrom   dplyr        mutate_   select_
 #'
 
 parse_numeric_fields <- function(x, fieldnames) {
@@ -144,23 +152,38 @@ parse_numeric_fields <- function(x, fieldnames) {
       stringr::str_replace("%[[:blank:]]*$", "")
   }
 
+  reformat_field_names <- function(x, fieldnames) {
+    # x is a vector of strings
+    rows <- match(x, fieldnames$expected)
+    newfields <- fieldnames$output[rows]
+    # a cutadapt summary contains some duplicated fieldnames
+    read_idx <- which(x %in% c("Read 1", "Read 2"))
+    read_parent <- read_idx - ifelse(x[read_idx] == "Read 1", 1, 2)
+    read_suffix <- c("_r1", "_r2")[ifelse(x[read_idx] == "Read 1", 1, 2)]
+    newfields[read_idx] <- paste(
+      newfields[read_parent], read_suffix,
+      sep = ""
+    )
+    newfields
+  }
+
   lines_as_df <- x %>%
     extract_numeric_lines() %>%
     reformat_numeric_lines() %>%
     # convert into key-value (string -> string) pairs
     parse_colon_separated_lines()
 
-  if (!isTRUE(all.equal(lines_as_df$field, fieldnames$expected))) {
-    message(setdiff(lines_as_df$field, fieldnames$expected))
-    message(setdiff(fieldnames$expected, lines_as_df$field))
+  if (!isTRUE(all(lines_as_df$field %in% fieldnames$expected))) {
     stop(
       "All numeric fields from the text should be in the fieldnames dataframe"
     )
   }
 
   lines_as_df %>%
-    dplyr::mutate(field = fieldnames$output) %>%
-    dplyr::mutate_(val = ~readr::parse_number(value)) %>%
+    dplyr::mutate_(
+      field = ~reformat_field_names(field, fieldnames),
+      val = ~readr::parse_number(value)
+    ) %>%
     dplyr::select_(.dots = c("field", "val")) %>%
     tidyr::spread_(key_col = "field", value_col = "val")
 }
