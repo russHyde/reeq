@@ -56,29 +56,6 @@ extract_cutadapt_summary <- function(x) {
   without_footer
 }
 
-#' Define the renaming of the fields present in a cutadapt log summary section
-#'
-#' @importFrom   tibble        tribble
-#'
-
-define_cutadapt_summary_renaming <- function() {
-  tibble::tribble(
-    ~expected, ~output,
-    "Total read pairs processed", "rp_input",
-    "Read 1 with adapter", "r1_with_adapter",
-    "Read 2 with adapter", "r2_with_adapter",
-    "Pairs that were too short", "rp_too_short",
-    "Pairs that were too long", "rp_too_long",
-    "Pairs with too many N", "rp_too_many_n",
-    "Pairs written (passing filters)", "rp_output",
-    "Total basepairs processed", "bp_input",
-    "Read 1", "bp_input_r1",
-    "Read 2", "bp_input_r2",
-    "Total written (filtered)", "bp_output",
-    "Read 1", "bp_output_r1",
-    "Read 2", "bp_output_r2"
-  )
-}
 
 #' Takes the 'summary' text from a cutadapt log-file and extracts the number of
 #' readpairs / basepairs that were input and which pass/fail various filters.
@@ -105,6 +82,30 @@ parse_cutadapt_summary <- function(x) {
 # ---- Helpers
 
 ###############################################################################
+
+#' Define the renaming of the fields present in a cutadapt log summary section
+#'
+#' @importFrom   tibble        tribble
+#'
+
+define_cutadapt_summary_renaming <- function() {
+  tibble::tribble(
+    ~expected, ~output,
+    "Total read pairs processed", "rp_input",
+    "Read 1 with adapter", "r1_with_adapter",
+    "Read 2 with adapter", "r2_with_adapter",
+    "Pairs that were too short", "rp_too_short",
+    "Pairs that were too long", "rp_too_long",
+    "Pairs with too many N", "rp_too_many_n",
+    "Pairs written (passing filters)", "rp_output",
+    "Total basepairs processed", "bp_input",
+    "Read 1", "bp_input_r1",
+    "Read 2", "bp_input_r2",
+    "Total written (filtered)", "bp_output",
+    "Read 1", "bp_output_r1",
+    "Read 2", "bp_output_r2"
+  )
+}
 
 #' parse_numeric_fields
 #'
