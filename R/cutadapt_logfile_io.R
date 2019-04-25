@@ -76,7 +76,8 @@ parse_cutadapt_summary <- function(x) {
 
   fieldnames <- define_cutadapt_summary_renaming()
 
-  parse_numeric_fields(x, fieldnames)
+  parse_numeric_fields(x, fieldnames) %>%
+    spread_and_rename_cutadapt_fieldnames(fieldnames)
 }
 
 ###############################################################################
@@ -135,6 +136,6 @@ spread_and_rename_cutadapt_fieldnames <- function(x, fieldnames) {
     dplyr::mutate_(
       field = ~reformat_field_names(field, fieldnames)
     ) %>%
-    dplyr::select_(.dots = c("field", "val")) %>%
-    tidyr::spread_(key_col = "field", value_col = "val")
+    dplyr::select_(.dots = c("field", "value")) %>%
+    tidyr::spread_(key_col = "field", value_col = "value")
 }

@@ -56,7 +56,7 @@ parse_numeric_fields <- function(x, fieldnames) {
     parse_colon_separated_lines() %>%
     # convert into key-value (string -> number) pairs
     dplyr::mutate_(
-      val = ~readr::parse_number(value)
+      value = ~readr::parse_number(value)
     )
 
   # TODO: return here
@@ -64,7 +64,7 @@ parse_numeric_fields <- function(x, fieldnames) {
   # disambiguating the original fieldnames and for reformatting the
   # disambiguated fieldnames
 
-  spread_and_rename_cutadapt_fieldnames(lines_as_df, fieldnames)
+  lines_as_df
 }
 
 
