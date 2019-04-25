@@ -108,3 +108,33 @@ define_cutadapt_summary_renaming <- function() {
     "Read 2", "bp_output_r2"
   )
 }
+
+spread_and_rename_cutadapt_fieldnames <- function(x, fieldnames) {
+  reformat_field_names <- function(x, fieldnames) {
+    # x is a vector of strings
+    rows <- match(x, fieldnames$expected)
+    newfields <- fieldnames$output[rows]
+    # a cutadapt summary contains some duplicated fieldnames
+    read_idx <- which(x %in% c("Read 1", "Read 2"))
+    read_parent <- read_idx - ifelse(x[read_idx] == "Read 1", 1, 2)
+    read_suffix <- c("_r1", "_r2")[ifelse(x[read_idx] == "Read 1", 1, 2)]
+    newfields[read_idx] <- paste(
+      newfields[read_parent], read_suffix,
+      sep = ""
+    )
+    newfields
+  }
+
+  if (!isTRUE(all(x$field %in% fieldnames$expected))) {
+    stop(
+      "All numeric fields from the text should be in the fieldnames dataframe"
+    )
+  }
+
+  x %>%
+    dplyr::mutate_(
+      field = ~reformat_field_names(field, fieldnames)
+    ) %>%
+    dplyr::select_(.dots = c("field", "val")) %>%
+    tidyr::spread_(key_col = "field", value_col = "val")
+}

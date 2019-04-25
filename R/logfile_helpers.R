@@ -49,41 +49,24 @@ parse_numeric_fields <- function(x, fieldnames) {
       stringr::str_replace("%[[:blank:]]*$", "")
   }
 
-  reformat_field_names <- function(x, fieldnames) {
-    # x is a vector of strings
-    rows <- match(x, fieldnames$expected)
-    newfields <- fieldnames$output[rows]
-    # a cutadapt summary contains some duplicated fieldnames
-    read_idx <- which(x %in% c("Read 1", "Read 2"))
-    read_parent <- read_idx - ifelse(x[read_idx] == "Read 1", 1, 2)
-    read_suffix <- c("_r1", "_r2")[ifelse(x[read_idx] == "Read 1", 1, 2)]
-    newfields[read_idx] <- paste(
-      newfields[read_parent], read_suffix,
-      sep = ""
-    )
-    newfields
-  }
-
   lines_as_df <- x %>%
     extract_numeric_lines() %>%
     reformat_numeric_lines() %>%
     # convert into key-value (string -> string) pairs
-    parse_colon_separated_lines()
-
-  if (!isTRUE(all(lines_as_df$field %in% fieldnames$expected))) {
-    stop(
-      "All numeric fields from the text should be in the fieldnames dataframe"
-    )
-  }
-
-  lines_as_df %>%
+    parse_colon_separated_lines() %>%
+    # convert into key-value (string -> number) pairs
     dplyr::mutate_(
-      field = ~reformat_field_names(field, fieldnames),
       val = ~readr::parse_number(value)
-    ) %>%
-    dplyr::select_(.dots = c("field", "val")) %>%
-    tidyr::spread_(key_col = "field", value_col = "val")
+    )
+
+  # TODO: return here
+  # - logfiles from different tools will require different methods for
+  # disambiguating the original fieldnames and for reformatting the
+  # disambiguated fieldnames
+
+  spread_and_rename_cutadapt_fieldnames(lines_as_df, fieldnames)
 }
+
 
 #' parse_colon_separated_lines
 #'
