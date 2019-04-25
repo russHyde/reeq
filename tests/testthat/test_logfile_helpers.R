@@ -88,16 +88,6 @@ test_that("parse_numeric_fields from a colon-separated logfile text", {
         "drop_the_trailing_bp : 987 bp   ",
         "drop_the_percent_sign    : 10%",
         sep = "\n"
-      ),
-      fieldnames = tibble::tibble(
-        expected = c(
-          "my_field_name", "drop_the_trailing_percent", "drop_the_trailing_bp",
-          "drop_the_percent_sign"
-        ),
-        output = c(
-          "My_Formatted_Field", "Percent_Free_Field", "BasePair_Free_Field",
-          "No_Percent_Sign"
-        )
       )
     ),
     expected = tibble::tribble(
@@ -112,7 +102,7 @@ test_that("parse_numeric_fields from a colon-separated logfile text", {
     )
   )
 
-  #expect_error(
+  # expect_error(
   #  object = parse_numeric_fields(
   #    x = "observed_field1 : 123\nobserved_field2 : 456",
   #    fieldnames = tibble::tibble(
@@ -124,6 +114,6 @@ test_that("parse_numeric_fields from a colon-separated logfile text", {
   #    "all numeric fields in the cutadapt log-summary should have a",
   #    "corresponding entry in fieldnames (so they can be reformatted)"
   #  )
-  #)
+  # )
 })
 ##############################################################################

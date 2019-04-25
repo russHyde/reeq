@@ -56,7 +56,6 @@ extract_cutadapt_summary <- function(x) {
   without_footer
 }
 
-
 #' Takes the 'summary' text from a cutadapt log-file and extracts the number of
 #' readpairs / basepairs that were input and which pass/fail various filters.
 #'
@@ -76,7 +75,7 @@ parse_cutadapt_summary <- function(x) {
 
   fieldnames <- define_cutadapt_summary_renaming()
 
-  parse_numeric_fields(x, fieldnames) %>%
+  parse_numeric_fields(x) %>%
     spread_and_rename_cutadapt_fieldnames(fieldnames)
 }
 
@@ -110,6 +109,20 @@ define_cutadapt_summary_renaming <- function() {
   )
 }
 
+#' spread_and_rename_cutadapt_fieldnames
+#'
+#' This should be a temporary function
+#'
+#' @param        x             A dataframe with columns "field" and "value".
+#'
+#' @param        fieldnames    A dataframe containing two columns: expected and
+#'   output. The \code{expected} gives the fieldnames that are expected to be
+#'   present in the text (\code{x}); \code{output} gives the names that these
+#'   fields should be converted to in the output dataframe
+#'
+#' @importFrom   dplyr        mutate_   select_
+#' @importFrom   tidyr        spread_
+#'
 spread_and_rename_cutadapt_fieldnames <- function(x, fieldnames) {
   reformat_field_names <- function(x, fieldnames) {
     # x is a vector of strings
@@ -125,6 +138,8 @@ spread_and_rename_cutadapt_fieldnames <- function(x, fieldnames) {
     )
     newfields
   }
+
+  stopifnot(all.equal(colnames(fieldnames), c("expected", "output")))
 
   if (!isTRUE(all(x$field %in% fieldnames$expected))) {
     stop(

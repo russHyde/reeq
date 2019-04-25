@@ -9,26 +9,18 @@
 #' @param        x             A single character string. This should be
 #'   newline-separated. Key-Value pairs are assumed to be colon-separated
 #'   and any line that is, is converted into a key-value pair.
-#' @param        fieldnames    A dataframe containing two columns: expected and
-#'   output. The \code{expected} gives the fieldnames that are expected to be
-#'   present in the text (\code{x}); \code{output} gives the names that these
-#'   fields should be converted to in the output dataframe
 #'
-#' @return       A dataframe. Contains columns field and val (? others) where
-#'   the entries of \code{val} are the values found within the text \code{x}
-#'   for the fields in \code{field}.
+#' @return       A dataframe. Contains columns "field" and "value" where
+#'   the entries of \code{value} are the values found within the text \code{x}
+#'   for the fields in \code{field}. The fieldnames _may_ be duplicated but are
+#'   returned in the same order as they are observed in the logfile.
 #'
-#' @importFrom   tidyr        spread_
 #' @importFrom   readr        parse_number
 #' @importFrom   stringr      str_subset   str_replace
-#' @importFrom   dplyr        mutate_   select_
+#' @importFrom   dplyr        mutate_
 #'
 
-parse_numeric_fields <- function(x, fieldnames) {
-  # `x` should be bare text, not split
-  stopifnot(is.character(x) && length(x) == 1)
-  stopifnot(all.equal(colnames(fieldnames), c("expected", "output")))
-
+parse_numeric_fields <- function(x) {
   extract_numeric_lines <- function(x) {
     # split some text into distinct lines, and keep only those lines with a
     # numeric statistic on the RHS of a colon
@@ -49,7 +41,10 @@ parse_numeric_fields <- function(x, fieldnames) {
       stringr::str_replace("%[[:blank:]]*$", "")
   }
 
-  lines_as_df <- x %>%
+  # `x` should be bare text, not split
+  stopifnot(is.character(x) && length(x) == 1)
+
+  x %>%
     extract_numeric_lines() %>%
     reformat_numeric_lines() %>%
     # convert into key-value (string -> string) pairs
@@ -58,15 +53,7 @@ parse_numeric_fields <- function(x, fieldnames) {
     dplyr::mutate_(
       value = ~readr::parse_number(value)
     )
-
-  # TODO: return here
-  # - logfiles from different tools will require different methods for
-  # disambiguating the original fieldnames and for reformatting the
-  # disambiguated fieldnames
-
-  lines_as_df
 }
-
 
 #' parse_colon_separated_lines
 #'

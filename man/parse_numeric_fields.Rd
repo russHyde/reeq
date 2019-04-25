@@ -4,22 +4,18 @@
 \alias{parse_numeric_fields}
 \title{parse_numeric_fields}
 \usage{
-parse_numeric_fields(x, fieldnames)
+parse_numeric_fields(x)
 }
 \arguments{
 \item{x}{A single character string. This should be
 newline-separated. Key-Value pairs are assumed to be colon-separated
 and any line that is, is converted into a key-value pair.}
-
-\item{fieldnames}{A dataframe containing two columns: expected and
-output. The \code{expected} gives the fieldnames that are expected to be
-present in the text (\code{x}); \code{output} gives the names that these
-fields should be converted to in the output dataframe}
 }
 \value{
-A dataframe. Contains columns field and val (? others) where
-  the entries of \code{val} are the values found within the text \code{x}
-  for the fields in \code{field}.
+A dataframe. Contains columns "field" and "value" where
+  the entries of \code{value} are the values found within the text \code{x}
+  for the fields in \code{field}. The fieldnames _may_ be duplicated but are
+  returned in the same order as they are observed in the logfile.
 }
 \description{
 parse_numeric_fields
