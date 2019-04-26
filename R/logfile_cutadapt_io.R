@@ -73,10 +73,8 @@ parse_cutadapt_summary <- function(x) {
     stop("`x` should be defined in `parse_cutadapt_summary`")
   }
 
-  fieldnames <- define_cutadapt_summary_renaming()
-
   parse_numeric_fields(x) %>%
-    spread_and_rename_cutadapt_fieldnames(fieldnames)
+    spread_and_rename_cutadapt_fieldnames()
 }
 
 ###############################################################################
@@ -85,71 +83,71 @@ parse_cutadapt_summary <- function(x) {
 
 ###############################################################################
 
-#' Define the renaming of the fields present in a cutadapt log summary section
-#'
-#' @importFrom   tibble        tribble
-#'
-
-define_cutadapt_summary_renaming <- function() {
-  tibble::tribble(
-    ~expected, ~output,
-    "Total read pairs processed", "rp_input",
-    "Read 1 with adapter", "r1_with_adapter",
-    "Read 2 with adapter", "r2_with_adapter",
-    "Pairs that were too short", "rp_too_short",
-    "Pairs that were too long", "rp_too_long",
-    "Pairs with too many N", "rp_too_many_n",
-    "Pairs written (passing filters)", "rp_output",
-    "Total basepairs processed", "bp_input",
-    "Read 1", "bp_input_r1",
-    "Read 2", "bp_input_r2",
-    "Total written (filtered)", "bp_output",
-    "Read 1", "bp_output_r1",
-    "Read 2", "bp_output_r2"
-  )
-}
-
 #' spread_and_rename_cutadapt_fieldnames
 #'
 #' This should be a temporary function
 #'
 #' @param        x             A dataframe with columns "field" and "value".
 #'
-#' @param        fieldnames    A dataframe containing two columns: expected and
-#'   output. The \code{expected} gives the fieldnames that are expected to be
-#'   present in the text (\code{x}); \code{output} gives the names that these
-#'   fields should be converted to in the output dataframe
-#'
 #' @importFrom   dplyr        mutate_   select_
+#' @importFrom   tibble       tribble
 #' @importFrom   tidyr        spread_
 #'
-spread_and_rename_cutadapt_fieldnames <- function(x, fieldnames) {
-  reformat_field_names <- function(x, fieldnames) {
-    # x is a vector of strings
-    rows <- match(x, fieldnames$expected)
-    newfields <- fieldnames$output[rows]
-    # a cutadapt summary contains some duplicated fieldnames
+spread_and_rename_cutadapt_fieldnames <- function(x) {
+  define_cutadapt_summary_renaming <- function() {
+    tibble::tribble(
+      ~expected, ~output,
+      "Total read pairs processed", "rp_input",
+      "Read 1 with adapter", "r1_with_adapter",
+      "Read 2 with adapter", "r2_with_adapter",
+      "Pairs that were too short", "rp_too_short",
+      "Pairs that were too long", "rp_too_long",
+      "Pairs with too many N", "rp_too_many_n",
+      "Pairs written (passing filters)", "rp_output",
+      "Total basepairs processed", "bp_input",
+      "Read 1 - Total basepairs processed", "bp_input_r1",
+      "Read 2 - Total basepairs processed", "bp_input_r2",
+      "Total written (filtered)", "bp_output",
+      "Read 1 - Total written (filtered)", "bp_output_r1",
+      "Read 2 - Total written (filtered)", "bp_output_r2"
+    )
+  }
+
+  # For a paired-end cutadapt run, we get two "Read 1" and two "Read 2" fields
+  # These are nested under the `parent` fields "Total basepairs processed"
+  #   (first) and "Total written (filtered)" (second). We disambiguate them by
+  #   appending the parent-field-name to the child; this converts the input
+  #   fieldnames to be a unique set.
+  #
+  disambiguate_fieldnames <- function(x) {
     read_idx <- which(x %in% c("Read 1", "Read 2"))
     read_parent <- read_idx - ifelse(x[read_idx] == "Read 1", 1, 2)
-    read_suffix <- c("_r1", "_r2")[ifelse(x[read_idx] == "Read 1", 1, 2)]
-    newfields[read_idx] <- paste(
-      newfields[read_parent], read_suffix,
-      sep = ""
-    )
-    newfields
+
+    suffix <- rep("", length(x))
+    suffix[read_idx] <- paste0(" - ", x[read_parent])
+
+    paste0(x, suffix)
   }
+
+  reformat_fieldnames <- function(x, fieldnames) {
+    if (!all(x %in% fieldnames$expected)) {
+      stop(
+        "All numeric fields from the text should be in the fieldnames dataframe"
+      )
+    }
+    replace_with(x, fieldnames$expected, fieldnames$output)
+  }
+
+  # --
+
+  fieldnames <- define_cutadapt_summary_renaming()
 
   stopifnot(all.equal(colnames(fieldnames), c("expected", "output")))
 
-  if (!isTRUE(all(x$field %in% fieldnames$expected))) {
-    stop(
-      "All numeric fields from the text should be in the fieldnames dataframe"
-    )
-  }
-
   x %>%
     dplyr::mutate_(
-      field = ~reformat_field_names(field, fieldnames)
+      field = ~disambiguate_fieldnames(field),
+      field = ~reformat_fieldnames(field, fieldnames)
     ) %>%
     dplyr::select_(.dots = c("field", "value")) %>%
     tidyr::spread_(key_col = "field", value_col = "value")
