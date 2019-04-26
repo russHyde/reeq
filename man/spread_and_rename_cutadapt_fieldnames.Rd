@@ -4,15 +4,10 @@
 \alias{spread_and_rename_cutadapt_fieldnames}
 \title{spread_and_rename_cutadapt_fieldnames}
 \usage{
-spread_and_rename_cutadapt_fieldnames(x, fieldnames)
+spread_and_rename_cutadapt_fieldnames(x)
 }
 \arguments{
 \item{x}{A dataframe with columns "field" and "value".}
-
-\item{fieldnames}{A dataframe containing two columns: expected and
-output. The \code{expected} gives the fieldnames that are expected to be
-present in the text (\code{x}); \code{output} gives the names that these
-fields should be converted to in the output dataframe}
 }
 \description{
 This should be a temporary function

@@ -93,6 +93,8 @@ parse_cutadapt_summary <- function(x) {
 #' @importFrom   tibble       tribble
 #' @importFrom   tidyr        spread_
 #'
+#' @include      utilities.R
+#'
 spread_and_rename_cutadapt_fieldnames <- function(x) {
   define_cutadapt_summary_renaming <- function() {
     tibble::tribble(
