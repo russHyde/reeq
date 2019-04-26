@@ -89,11 +89,10 @@ parse_cutadapt_summary <- function(x) {
 #'
 #' @param        x             A dataframe with columns "field" and "value".
 #'
-#' @importFrom   dplyr        mutate_   select_
+#' @importFrom   dplyr        mutate_
 #' @importFrom   tibble       tribble
-#' @importFrom   tidyr        spread_
 #'
-#' @include      utilities.R
+#' @include      logfile_helpers.R
 #'
 spread_and_rename_cutadapt_fieldnames <- function(x) {
   define_cutadapt_summary_renaming <- function() {
@@ -135,16 +134,9 @@ spread_and_rename_cutadapt_fieldnames <- function(x) {
 
   fieldnames <- define_cutadapt_summary_renaming()
 
-  stopifnot(all.equal(colnames(fieldnames), c("expected", "output")))
-
-  x %>%
-    dplyr::mutate_(
-      field = ~disambiguate_fieldnames(field),
-      field = ~replace_with(
-        field, fieldnames$expected, fieldnames$output,
-        strict = TRUE
-      )
-    ) %>%
-    dplyr::select_(.dots = c("field", "value")) %>%
-    tidyr::spread_(key_col = "field", value_col = "value")
+  dplyr::mutate_(
+    x,
+    field = ~disambiguate_fieldnames(field)
+  ) %>%
+    spread_and_rename_numeric_fields(fieldnames)
 }

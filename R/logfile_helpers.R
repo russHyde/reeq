@@ -4,6 +4,43 @@
 
 ###############################################################################
 
+#' spread_and_rename_numeric_fields
+#'
+#' @param        x             A dataframe containing two columns "field" and
+#'   "value". The elements in "field" will be renamed according to the mapping
+#'   in `fieldnames`
+#' @param        fieldnames    A dataframe containing two columns: "expected"
+#'   and "output".
+#'
+#' @return       A dataframe. The columns ordering corresponds to the "field"
+#'   column in `x` (one column for each row in `x` and the columns are named
+#'   according to the reformatting defined by `fieldnames`).
+#'
+#' @importFrom   dplyr         mutate_
+#' @importFrom   tidyr         spread_
+#' @include      utilities.R
+#'
+spread_and_rename_numeric_fields <- function(x, fieldnames) {
+  if(! all(c("expected", "output") %in% colnames(fieldnames))){
+    stop()
+  }
+
+  if (! all(c("field", "value") %in% colnames(x))){
+    stop()
+  }
+
+  df <- dplyr::mutate_(
+    x,
+    field = ~ replace_with(
+      field, fieldnames$expected, fieldnames$output, strict = TRUE
+    )
+  )
+
+  tidyr::spread_(
+    df, key_col = "field", value_col = "value"
+  )[df$field]
+}
+
 #' parse_numeric_fields
 #'
 #' @param        x             A single character string. This should be

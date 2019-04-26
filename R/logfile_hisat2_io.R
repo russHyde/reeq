@@ -10,6 +10,8 @@
 #'   function dies if this is not an existing file of if more than one entry is
 #'   present in \code{x}.
 #'
+#' @importFrom   readr         read_file
+#'
 #' @export
 #'
 
@@ -23,6 +25,14 @@ import_hisat2_summary <- function(x) {
   parse_hisat2_summary(log_txt)
 }
 
+#' parse_hisat2_summary
+#'
+#' @param        x             The text from a hisat2 summary file. It is
+#'   assumed that the `--new-summary` flag was used while making this file.
+#'   There should be only a single entry in `x`.
+#'
+#' @importFrom   dplyr         mutate_
+
 parse_hisat2_summary <- function(x) {
   # Assumes the input text is from a --new-summary from hisat2
   # - Work out how to distinguish --new-summary from old summary files
@@ -33,6 +43,15 @@ parse_hisat2_summary <- function(x) {
     spread_and_rename_hisat2_fieldnames() %>%
     dplyr::mutate_(align_rate = ~align_rate / 100)
 }
+
+#' spread_and_rename_hisat2_fieldnames
+#'
+#' @param        x             A datafame with two columns "field" and "value".
+#'   The numeric fields from a hisat2 logfile should have been extracted into
+#'   this dataframe.
+#'
+#' @include      logfile_helpers.R
+#'
 
 spread_and_rename_hisat2_fieldnames <- function(x) {
   define_hisat2_summary_renaming <- function() {
@@ -51,16 +70,9 @@ spread_and_rename_hisat2_fieldnames <- function(x) {
     )
   }
 
-  # nolint start
+  # --
+
   fieldnames <- define_hisat2_summary_renaming()
 
-  df <- mutate_(
-    x,
-    field = ~replace_with(
-      field, fieldnames$expected, fieldnames$output, strict = TRUE
-    )
-  )
-  # nolint end
-
-  tidyr::spread_(df, key_col = "field", value_col = "value")[df$field]
+  spread_and_rename_numeric_fields(x, fieldnames)
 }
