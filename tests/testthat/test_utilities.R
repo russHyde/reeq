@@ -33,4 +33,11 @@ test_that("replace with", {
     replace_with("some_value", letters[1:3], LETTERS[1:4]),
     info = "search_list and return_list should be the same length"
   )
+
+  expect_error(
+    replace_with(c("a", "b", "c", "D"), letters, LETTERS, strict = TRUE),
+    info = paste(
+      "when strict=TRUE, every element in `x` should be in the `search_list`"
+    )
+  )
 })

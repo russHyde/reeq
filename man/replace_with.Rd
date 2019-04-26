@@ -4,7 +4,7 @@
 \alias{replace_with}
 \title{replace_with}
 \usage{
-replace_with(x, search_list, return_list)
+replace_with(x, search_list, return_list, strict = FALSE)
 }
 \arguments{
 \item{x}{A vector.}
@@ -13,6 +13,9 @@ replace_with(x, search_list, return_list)
 
 \item{return_list}{A vector. This should be the same length as
 \code{search_list}.}
+
+\item{strict}{Boolean. Should every element of `x` be present
+in \code{search_list}?}
 }
 \value{
 A vector of the same length as \code{x}, containing some

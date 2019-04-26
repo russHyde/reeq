@@ -14,6 +14,8 @@
 #' @param        search_list   A vector.
 #' @param        return_list   A vector. This should be the same length as
 #'   \code{search_list}.
+#' @param        strict        Boolean. Should every element of `x` be present
+#'   in \code{search_list}?
 #'
 #' @return       A vector of the same length as \code{x}, containing some
 #'   values from \code{x} and some values from \code{return_list} (so the class
@@ -21,10 +23,13 @@
 #'
 #' @export
 
-replace_with <- function(x, search_list, return_list) {
+replace_with <- function(x, search_list, return_list, strict = FALSE) {
   stopifnot(
     length(search_list) == length(return_list)
   )
+  if (strict && !all(x %in% search_list)) {
+    stop("When `strict`==FALSE, all members of `x` should be in `search_list`")
+  }
   if (length(x) == 0) {
     return(x)
   }
