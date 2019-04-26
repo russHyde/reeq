@@ -51,6 +51,8 @@ test_that("parse numeric fields from a hisat2 logfile's text", {
     info = "Input to parse_hisat2_summary should be a single string"
   )
 
+  # nolint start
+
   example <-
     "HISAT2 summary stats:
 	Total pairs: 114671
@@ -63,6 +65,8 @@ test_that("parse numeric fields from a hisat2 logfile's text", {
 		Aligned 1 time: 3078 (18.64%)
 		Aligned >1 times: 861 (5.21%)
 	Overall alignment rate: 94.52%"
+
+  # nolint end
 
   object <- parse_hisat2_summary(example)
 
