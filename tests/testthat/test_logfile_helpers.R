@@ -4,6 +4,43 @@ context("Tests for logfile-helper functions")
 
 ###############################################################################
 
+test_that("spread_and_rename_numeric_fields", {
+
+  expect_error(
+    spread_and_rename_numeric_fields(
+      x = tibble::tibble(field = letters[1:3], value = 1:3),
+      fieldnames = tibble::tibble(
+        wrong = 1:3, columns = 4:6
+      )
+    ),
+    info = "fieldnames should have columns (expected,output)"
+  )
+
+  expect_error(
+    spread_and_rename_numeric_fields(
+      x = tibble::tibble(wrong = 1:3, columns = 4:6),
+      fieldnames = tibble::tibble(
+        expected = "Some Field", output = "some_field"
+      )
+    ),
+    info = "x should have columns (field,value)"
+  )
+
+  expect_error(
+    spread_and_rename_numeric_fields(
+      x = tibble::tibble(
+        field = rep("some_field", 2), value = 1
+      ),
+      fieldnames = tibble::tibble(
+        expected = "some_field", output = "some_field"
+      )
+    ),
+    info = "There should be no duplicates in x$field"
+  )
+})
+
+###############################################################################
+
 test_that("parse_colon_separated_lines", {
   expect_error(
     object = parse_colon_separated_lines(),

@@ -81,3 +81,6 @@ Total written (filtered):     17,217,852 bp (99.8%)
     info = "Single cutadapt-summary parsing example"
   )
 })
+
+
+###############################################################################

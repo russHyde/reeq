@@ -20,24 +20,31 @@
 #' @importFrom   tidyr         spread_
 #' @include      utilities.R
 #'
+
 spread_and_rename_numeric_fields <- function(x, fieldnames) {
-  if(! all(c("expected", "output") %in% colnames(fieldnames))){
-    stop()
+  if (!all(c("expected", "output") %in% colnames(fieldnames))) {
+    stop("columns (expected, output) should be present in `fieldnames`")
   }
 
-  if (! all(c("field", "value") %in% colnames(x))){
-    stop()
+  if (!all(c("field", "value") %in% colnames(x))) {
+    stop("columns (field, value) should be present in `x`")
+  }
+
+  if (any(duplicated(x$field))){
+    stop("The elements in `x$field` should be unique")
   }
 
   df <- dplyr::mutate_(
     x,
-    field = ~ replace_with(
-      field, fieldnames$expected, fieldnames$output, strict = TRUE
+    field = ~replace_with(
+      field, fieldnames$expected, fieldnames$output,
+      strict = TRUE
     )
   )
 
   tidyr::spread_(
-    df, key_col = "field", value_col = "value"
+    df,
+    key_col = "field", value_col = "value"
   )[df$field]
 }
 
