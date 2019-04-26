@@ -56,7 +56,9 @@ spread_and_rename_hisat2_fieldnames <- function(x) {
 
   df <- mutate_(
     x,
-    field = ~replace_with(field, fieldnames$expected, fieldnames$output)
+    field = ~replace_with(
+      field, fieldnames$expected, fieldnames$output, strict = TRUE
+    )
   )
   # nolint end
 

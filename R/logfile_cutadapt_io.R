@@ -131,15 +131,6 @@ spread_and_rename_cutadapt_fieldnames <- function(x) {
     paste0(x, suffix)
   }
 
-  reformat_fieldnames <- function(x, fieldnames) {
-    if (!all(x %in% fieldnames$expected)) {
-      stop(
-        "All numeric fields from the text should be in the fieldnames dataframe"
-      )
-    }
-    replace_with(x, fieldnames$expected, fieldnames$output)
-  }
-
   # --
 
   fieldnames <- define_cutadapt_summary_renaming()
@@ -149,7 +140,10 @@ spread_and_rename_cutadapt_fieldnames <- function(x) {
   x %>%
     dplyr::mutate_(
       field = ~disambiguate_fieldnames(field),
-      field = ~reformat_fieldnames(field, fieldnames)
+      field = ~replace_with(
+        field, fieldnames$expected, fieldnames$output,
+        strict = TRUE
+      )
     ) %>%
     dplyr::select_(.dots = c("field", "value")) %>%
     tidyr::spread_(key_col = "field", value_col = "value")
