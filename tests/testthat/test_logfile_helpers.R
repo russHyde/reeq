@@ -87,6 +87,7 @@ test_that("parse_numeric_fields from a colon-separated logfile text", {
         "omit_any_nonnumeric_lines : not_a_number",
         "drop_the_trailing_bp : 987 bp   ",
         "drop_the_percent_sign    : 10%",
+        "\tOverall alignment rate: 98.51%",
         sep = "\n"
       )
     ),
@@ -95,7 +96,8 @@ test_that("parse_numeric_fields from a colon-separated logfile text", {
       "my_field_name", 123456.45,
       "drop_the_trailing_percent", 12345,
       "drop_the_trailing_bp", 987,
-      "drop_the_percent_sign", 10
+      "drop_the_percent_sign", 10,
+      "Overall alignment rate", 98.51
     ),
     info = paste(
       "extract numeric fields from the summary section of a cutadapt log"
