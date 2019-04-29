@@ -1,7 +1,7 @@
 Package: reeq
 Type: Package
 Title: Provides Some Helper Functions For RNA-Seq Analysis / IO
-Version: 0.1.0
+Version: 0.2.0
 Author: Russ Hyde, University of Glasgow
 Maintainer: Russ Hyde <yourself@somewhere.net>
 Description: Provides some helper functions for importing, manipulating,
