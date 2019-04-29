@@ -1,0 +1,50 @@
+This is cutadapt 1.13 with Python 3.6.7
+Command line parameters: --trim-n --max-n=0.3 --nextseq-trim=20 --minimum-length=20 -a AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -A AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -a GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG -A GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG -g TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -G TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT -o data/job/tki_rg_rnaseq/ID002-02/002-2_L001_1.fastq.gz -p data/job/tki_rg_rnaseq/ID002-02/002-2_L001_2.fastq.gz data/int/fastq/ID002-02/002-2_S2_L001_R1_001.fastq.gz data/int/fastq/ID002-02/002-2_S2_L001_R2_001.fastq.gz
+Trimming 8 adapters with at most 10.0% errors in paired-end mode ...
+Finished in 770.57 s (52 us/read; 1.16 M reads/minute).
+
+=== Summary ===
+
+Total read pairs processed:         14,938,795
+  Read 1 with adapter:                 470,190 (3.1%)
+  Read 2 with adapter:                 985,586 (6.6%)
+Pairs that were too short:               5,610 (0.0%)
+Pairs with too many N:                   3,316 (0.0%)
+Pairs written (passing filters):    14,929,869 (99.9%)
+
+Total basepairs processed: 2,256,212,296 bp
+  Read 1: 1,128,350,220 bp
+  Read 2: 1,127,862,076 bp
+Total written (filtered):  2,242,419,595 bp (99.4%)
+  Read 1: 1,118,944,865 bp
+  Read 2: 1,123,474,730 bp
+
+=== First read: Adapter 1 ===
+
+Sequence: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA; Type: regular 3'; Length: 76; Trimmed: 173128 times.
+
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-39 bp: 3; 40-49 bp: 4; 50-59 bp: 5; 60-69 bp: 6; 70-76 bp: 7
+
+Bases preceding removed adapters:
+  A: 0.0%
+  C: 35.5%
+  G: 35.4%
+  T: 29.1%
+  none/other: 0.1%
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+3	113961	233418.7	0	113961
+4	33082	58354.7	0	33082
+5	10675	14588.7	0	10675
+6	3801	3647.2	0	3801
+7	1473	911.8	0	1473
+8	569	227.9	0	569
+9	434	57.0	0	434
+10	2178	14.2	1	387 1791
+11	1269	3.6	1	337 932
+12	802	0.9	1	288 514
+13	562	0.2	1	245 317
+14	440	0.1	1	212 228
+15	404	0.0	1	201 203

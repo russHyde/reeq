@@ -7,6 +7,43 @@ context("Tests for cutadapt logfile importing in `reeq`")
 # cutadapt parser tests
 
 ###############################################################################
+test_that("import data from a cutadapt qc logfile", {
+  # hard-coded test file
+  file <- "logfile_cutadapt/paired_end_cutadapt.log"
+
+  expect_error(
+    object = import_cutadapt_summary(c(file, file)),
+    info = "input to import_cutadapt_summary should be a single string"
+  )
+
+  expect_error(
+    object = import_cutadapt_summary("Not a file"),
+    info = "input to import_cutadapt_summary should be a filepath"
+  )
+
+  expected <- tibble::tibble(
+    rp_input = 14938795,
+    r1_with_adapter = 470190,
+    r2_with_adapter = 985586,
+    rp_too_short = 5610,
+    rp_too_many_n = 3316,
+    rp_output = 14929869,
+    bp_input = 2256212296,
+    bp_input_r1 = 1128350220,
+    bp_input_r2 = 1127862076,
+    bp_output = 2242419595,
+    bp_output_r1 = 1118944865,
+    bp_output_r2 = 1123474730
+  )
+
+  expect_equivalent(
+    object = as.data.frame(import_cutadapt_summary(file)),
+    expected = as.data.frame(expected),
+    info = "import cutadapt summary statistics from a file"
+  )
+})
+
+###############################################################################
 
 test_that("cutadapt summary extractor", {
   prefix <- "This is cutadapt 1.13 with Python 3.6.7

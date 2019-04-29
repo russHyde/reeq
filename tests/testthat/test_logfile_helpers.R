@@ -5,7 +5,6 @@ context("Tests for logfile-helper functions")
 ###############################################################################
 
 test_that("spread_and_rename_numeric_fields", {
-
   expect_error(
     spread_and_rename_numeric_fields(
       x = tibble::tibble(field = letters[1:3], value = 1:3),

@@ -30,7 +30,7 @@ spread_and_rename_numeric_fields <- function(x, fieldnames) {
     stop("columns (field, value) should be present in `x`")
   }
 
-  if (any(duplicated(x$field))){
+  if (any(duplicated(x$field))) {
     stop("The elements in `x$field` should be unique")
   }
 
