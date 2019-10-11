@@ -89,7 +89,8 @@ parse_cutadapt_summary <- function(x) {
 #'
 #' @param        x             A dataframe with columns "field" and "value".
 #'
-#' @importFrom   dplyr        mutate_
+#' @importFrom   dplyr        mutate
+#' @importFrom   rlang        .data
 #' @importFrom   tibble       tribble
 #'
 #' @include      logfile_helpers.R
@@ -134,9 +135,9 @@ spread_and_rename_cutadapt_fieldnames <- function(x) {
 
   fieldnames <- define_cutadapt_summary_renaming()
 
-  dplyr::mutate_(
+  dplyr::mutate(
     x,
-    field = ~disambiguate_fieldnames(field)
+    field = disambiguate_fieldnames(.data[["field"]])
   ) %>%
     spread_and_rename_numeric_fields(fieldnames)
 }

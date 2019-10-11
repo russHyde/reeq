@@ -9,8 +9,9 @@
 #' @param        gc_column     The column of the `mart` dataset that contains
 #'   the GC percentage values for the genes / features.
 #'
-#' @importFrom   dplyr         rename_   mutate_
 #' @importFrom   biomaRt       getBM
+#' @importFrom   dplyr         mutate
+#' @importFrom   rlang         .data
 #'
 #' @export
 
@@ -36,7 +37,7 @@ get_gc_percent <- function(
     stringsAsFactors = FALSE
   ) %>%
     merge(bm, by = "feature_id", all.x = TRUE) %>%
-    dplyr::mutate_(gc_percent = ~as.numeric(gc_percent))
+    dplyr::mutate(gc_percent = as.numeric(.data[["gc_percent"]]))
 }
 
 ###############################################################################
