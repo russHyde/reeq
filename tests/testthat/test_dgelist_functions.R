@@ -259,3 +259,36 @@ test_that("An offset matrix can be added to a DGEList", {
     info = "`offset` should be a numeric matrix"
   )
 })
+
+###############################################################################
+
+test_that("user can run cqn on a dgelist", {
+  dge <- get_dge2()
+
+  expect_error(
+    cqn_dgelist(x = "Not a DGEList"),
+    info = "Input to `cqn_dgelist` should be a DGEList"
+  )
+
+  expect_error(
+    cqn_dgelist(x = dge, length_column = "not a column"),
+    info = "length_column should be defined in x$genes"
+  )
+
+  expect_error(
+    cqn_dgelist(x = dge, gc_column = "not a column"),
+    info = "gc_column should be defined in x$genes"
+  )
+
+  expect_error(
+    cqn_dgelist(x = dge, lib_size_column = "not a column"),
+    info = "lib_size_column should be defined in x$genes"
+  )
+
+  mock_cqn <- mockery::mock(NULL)
+  mockery::stub(cqn_dgelist, "cqn::cqn", mock_cqn)
+
+  result <- cqn_dgelist(dge)
+  expect_null(result)
+  mockery::expect_called(mock_cqn, 1)
+})

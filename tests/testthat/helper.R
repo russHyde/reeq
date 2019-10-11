@@ -32,4 +32,10 @@ get_dge1 <- function(add_genes = FALSE) {
   # nolint end
 }
 
+get_dge2 <- function() {
+  my_dge <- get_dge1(TRUE)
+  my_dge$genes$gc_percent <- seq(0.1, 0.9, length.out = nrow(my_dge))
+  my_dge
+}
+
 ###############################################################################

@@ -27,7 +27,8 @@ Imports:
     tibble,
     stringr,
     tidyr,
-    rlang
+    rlang,
+    cqn
 Collate:
     'coverage.R'
     'data_validity.R'
