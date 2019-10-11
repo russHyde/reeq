@@ -70,7 +70,7 @@ test_that("parse numeric fields from a hisat2 logfile's text", {
 
   object <- parse_hisat2_summary(example)
 
-  expected <- tibble::data_frame(
+  expected <- tibble::tibble(
     rp_input = 114671,
     rp_zero = 8256,
     rp_concordant_once = 90414,

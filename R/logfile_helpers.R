@@ -16,7 +16,8 @@
 #'   column in `x` (one column for each row in `x` and the columns are named
 #'   according to the reformatting defined by `fieldnames`).
 #'
-#' @importFrom   dplyr         mutate_
+#' @importFrom   dplyr         mutate
+#' @importFrom   rlang         .data
 #' @importFrom   tidyr         spread_
 #' @include      utilities.R
 #'
@@ -34,10 +35,10 @@ spread_and_rename_numeric_fields <- function(x, fieldnames) {
     stop("The elements in `x$field` should be unique")
   }
 
-  df <- dplyr::mutate_(
+  df <- dplyr::mutate(
     x,
-    field = ~replace_with(
-      field, fieldnames$expected, fieldnames$output,
+    field = replace_with(
+      .data[["field"]], fieldnames$expected, fieldnames$output,
       strict = TRUE
     )
   )
@@ -59,9 +60,10 @@ spread_and_rename_numeric_fields <- function(x, fieldnames) {
 #'   for the fields in \code{field}. The fieldnames _may_ be duplicated but are
 #'   returned in the same order as they are observed in the logfile.
 #'
+#' @importFrom   dplyr        mutate
 #' @importFrom   readr        parse_number
+#' @importFrom   rlang        .data
 #' @importFrom   stringr      str_subset   str_replace
-#' @importFrom   dplyr        mutate_
 #'
 
 parse_numeric_fields <- function(x) {
@@ -94,8 +96,8 @@ parse_numeric_fields <- function(x) {
     # convert into key-value (string -> string) pairs
     parse_colon_separated_lines() %>%
     # convert into key-value (string -> number) pairs
-    dplyr::mutate_(
-      value = ~readr::parse_number(value)
+    dplyr::mutate(
+      value = readr::parse_number(.data[["value"]])
     )
 }
 

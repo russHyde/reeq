@@ -53,9 +53,10 @@ read_feature_counts <- function(
 #'   and count columns from a single run of `featureCounts`.
 #' @inheritParams   read_feature_counts
 #'
-#' @importFrom   dplyr         rename_
+#' @importFrom   dplyr         rename
 #' @importFrom   magrittr      %>%
 #' @importFrom   readr         read_tsv
+#' @importFrom   rlang         .data
 
 read_single_feature_counts_file <- function(
                                             file,
@@ -73,9 +74,9 @@ read_single_feature_counts_file <- function(
     comment = comment, col_types = col_types, progress = progress
   ) %>%
     drop_unrequired_columns() %>%
-    dplyr::rename_(
-      feature_id = ~Geneid,
-      length = ~Length
+    dplyr::rename(
+      feature_id = .data[["Geneid"]],
+      length = .data[["Length"]]
     )
 
   stopifnot(is_valid_fcounts_df(fcounts))

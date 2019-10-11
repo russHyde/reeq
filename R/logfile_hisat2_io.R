@@ -31,7 +31,8 @@ import_hisat2_summary <- function(x) {
 #'   assumed that the `--new-summary` flag was used while making this file.
 #'   There should be only a single entry in `x`.
 #'
-#' @importFrom   dplyr         mutate_
+#' @importFrom   dplyr         mutate
+#' @importFrom   rlang         .data
 
 parse_hisat2_summary <- function(x) {
   # Assumes the input text is from a --new-summary from hisat2
@@ -41,7 +42,7 @@ parse_hisat2_summary <- function(x) {
 
   parse_numeric_fields(x) %>%
     spread_and_rename_hisat2_fieldnames() %>%
-    dplyr::mutate_(align_rate = ~align_rate / 100)
+    dplyr::mutate(align_rate = .data[["align_rate"]] / 100)
 }
 
 #' spread_and_rename_hisat2_fieldnames

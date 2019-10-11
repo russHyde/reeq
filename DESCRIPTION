@@ -9,7 +9,7 @@ Description: Provides some helper functions for importing, manipulating,
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 URL: https://github.com/russHyde/reeq
 BugReports: https://github.com/russHyde/reeq/issues
 Suggests: testthat,
@@ -26,7 +26,8 @@ Imports:
     biomaRt,
     tibble,
     stringr,
-    tidyr
+    tidyr,
+    rlang
 Collate:
     'coverage.R'
     'data_validity.R'
