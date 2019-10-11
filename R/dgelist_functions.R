@@ -162,3 +162,42 @@ set_offset <- function(dge, offset) {
   dge$offset <- offset
   dge
 }
+
+###############################################################################
+
+#' cqn_dgelist
+#'
+#' @param        x             A DGEList object
+#' @param        length_column   Which column of x$genes contains the
+#'   gene-lengths.
+#' @param        gc_column     Which column of x$genes contains the GC content?
+#' @param        lib_size_column   Which column of x$samples contains the
+#'   library sizes?
+#' @param        ...           Further arguments to pass along to `cqn::cqn`
+#'
+#' @importFrom   cqn           cqn
+#' @importFrom   edgeR         getCounts
+#'
+#' @export
+
+cqn_dgelist <- function(x,
+                        length_column = "length",
+                        gc_column = "gc_percent",
+                        lib_size_column = "lib.size",
+                        ...) {
+  stopifnot(is(x, "DGEList"))
+  stopifnot(
+    length_column %in% colnames(x[["genes"]]) &&
+      gc_column %in% colnames(x[["genes"]]) &&
+      lib_size_column %in% colnames(x[["samples"]])
+  )
+
+  cqn::cqn(
+    counts = edgeR::getCounts(x),
+    x = x[["genes"]][[gc_column]],
+    lengths = x[["genes"]][[length_column]],
+    sizeFactors = x[["samples"]][[lib_size_column]]
+  )
+}
+
+###############################################################################
