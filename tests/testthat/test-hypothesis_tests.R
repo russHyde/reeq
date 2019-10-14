@@ -5,7 +5,7 @@ expect_equal_dgelrt <- function(object,
                                 tolerance = 1e-8,
                                 info = NULL) {
   # capture object and it's label
-  act <- quasi_label(rlang::enquo(object), arg = "object")
+  act <- testthat::quasi_label(rlang::enquo(object), arg = "object")
 
   # call expect
   ns <- union(names(object), names(expected))
