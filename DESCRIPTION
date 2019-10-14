@@ -12,7 +12,8 @@ LazyData: true
 RoxygenNote: 6.1.1
 URL: https://github.com/russHyde/reeq
 BugReports: https://github.com/russHyde/reeq/issues
-Suggests: testthat,
+Suggests:
+    testthat (>= 2.1.0),
     covr,
     mockery
 Imports:
@@ -28,7 +29,8 @@ Imports:
     stringr,
     tidyr,
     rlang,
-    cqn
+    cqn,
+    limma
 Collate:
     'coverage.R'
     'data_validity.R'
@@ -36,6 +38,7 @@ Collate:
     'feature_annotation.R'
     'feature_counts.R'
     'feature_counts_io.R'
+    'hypothesis_tests.R'
     'utilities.R'
     'logfile_helpers.R'
     'logfile_cutadapt_io.R'
