@@ -3,6 +3,7 @@
 export(append_feature_annotations)
 export(cbind_feature_counts)
 export(cqn_dgelist)
+export(export)
 export(feature_counts_to_dgelist)
 export(filter_by_read_count)
 export(get_gc_percent)
