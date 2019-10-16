@@ -5,7 +5,6 @@
 #' @noRd
 #'
 get_lrt <- function(fit, testable_features, contrast) {
-  message("Untested: `reeq::get_lrt`")
 
   stopifnot(is(fit, "DGEGLM"))
   stopifnot(all(testable_features %in% rownames(fit)))
@@ -19,7 +18,6 @@ get_lrt <- function(fit, testable_features, contrast) {
 #' @noRd
 #'
 get_sig_features <- function(lrt, p_threshold) {
-  message("Untested: `reeq::get_sig_features`")
 
   # TODO: expand to use limma::decideTests.MArrayLM
   stopifnot(is(lrt, "DGEExact") || is(lrt, "DGELRT"))
@@ -45,19 +43,20 @@ get_sig_test_summary <- function(fit,
                                  testable_features = row.names(fit),
                                  contrast,
                                  p_threshold = 0.05) {
-  message("Untested: `reeq::get_sig_test_summary`")
-
   lrt <- get_lrt(fit, testable_features, contrast)
   sig_features <- get_sig_features(lrt, p_threshold)
   top_table <- edgeR::topTags(lrt, n = Inf)
 
-  list(
-    features = testable_features,
-    sig_features = sig_features,
-    lrt = lrt,
-    top_table = top_table,
-    num_features = length(testable_features),
-    num_sig_features = length(sig_features),
-    p_threshold = p_threshold
+  structure(
+    list(
+      features = testable_features,
+      sig_features = sig_features,
+      lrt = lrt,
+      top_table = top_table,
+      num_features = length(testable_features),
+      num_sig_features = length(sig_features),
+      p_threshold = p_threshold
+    ),
+    class = "sig_test_summary"
   )
 }
