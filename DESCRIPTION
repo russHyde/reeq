@@ -17,20 +17,20 @@ Suggests:
     covr,
     mockery
 Imports:
-    magrittr,
-    edgeR,
-    Biobase,
-    methods,
-    dplyr,
-    readr (>= 1.0.0),
-    purrr,
     biomaRt,
-    tibble,
-    stringr,
-    tidyr,
-    rlang,
+    Biobase,
     cqn,
-    limma
+    edgeR,
+    dplyr,
+    limma,
+    magrittr,
+    methods,
+    purrr,
+    readr (>= 1.0.0),
+    rlang,
+    stringr,
+    tibble,
+    tidyr
 Collate:
     'coverage.R'
     'data_validity.R'
