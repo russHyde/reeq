@@ -31,18 +31,17 @@ test_that("export - creates the expected files", {
   out_dir <- file.path(tempdir(), "export1")
   dir.create(out_dir)
   top_table_file <- file.path(
-    out_dir, "some_contrast.simple_test.top_tags.tsv"
+    out_dir, "some_contrast.top_tags.tsv"
   )
   sig_features_file <- file.path(
-    out_dir, "some_contrast.simple_test.sig_features.p0.0011.tsv"
+    out_dir, "some_contrast.sig_features.p0.0011.tsv"
   )
 
   expect_silent(
     export(
       input,
       output_dir = out_dir,
-      test_name = "some_contrast",
-      test_type = "simple_test"
+      test_name = "some_contrast"
     )
   )
 
