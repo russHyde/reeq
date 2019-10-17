@@ -12,6 +12,11 @@ export <- function(x, ...) {
 
 #' Default function for exporting a data-structure.
 #'
+#' @inheritParams   export
+#'
+#' @noRd
+#'
+
 export.default <- function(x, ...) {
   stop("Not implemented")
 }
