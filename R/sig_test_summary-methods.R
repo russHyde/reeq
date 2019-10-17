@@ -16,6 +16,7 @@ export <- function(x, ...) {
 #'
 #' @noRd
 #'
+#' @export
 
 export.default <- function(x, ...) {
   stop("Not implemented")
@@ -38,6 +39,7 @@ export.default <- function(x, ...) {
 #'
 #' @importFrom   readr         write_tsv
 #'
+#' @export
 
 export.sig_test_summary <- function(x,
                                     output_dir,
