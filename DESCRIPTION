@@ -34,6 +34,7 @@ Imports:
 Collate:
     'coverage.R'
     'data_validity.R'
+    'define_contrasts.R'
     'dgelist_functions.R'
     'feature_annotation.R'
     'feature_counts.R'
