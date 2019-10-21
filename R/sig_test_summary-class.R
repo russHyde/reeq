@@ -5,7 +5,6 @@
 #' @noRd
 #'
 get_lrt <- function(fit, testable_features, contrast) {
-
   stopifnot(is(fit, "DGEGLM"))
   stopifnot(all(testable_features %in% rownames(fit)))
   sub_fit <- fit[testable_features, ]
