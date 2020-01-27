@@ -1,7 +1,7 @@
 #' get_lrt
 #'
 #' @importClassesFrom   edgeR   DGEGLM
-#' @importFrom   edgeR         glmLRT
+#' @importFrom   edgeR         glmLRT   [.DGEGLM
 #' @noRd
 #'
 get_lrt <- function(fit, testable_features, contrast) {
