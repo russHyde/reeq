@@ -25,4 +25,10 @@ The number of siblings of each LRT-node is also determined.
 The `level` should be 1 for the LRT-nodes comprised of the largest
 collection of contrasts and then increments for each proper subset of these
 nodes. level-1 nodes have no parent, so set parent = NA for these rows.
+
+The tibble that is returned is ordered by increasing 'level', to try to
+ensure that parent nodes occur before children.
+
+We allow a node to have at most one parent. For use in nested-LRT analysis,
+any node that has a missing (NA) parent must be at level-1.
 }

@@ -124,6 +124,29 @@ test_that(
   }
 )
 
+test_that("parents come before children in the output dataframe", {
+  table <- tibble::tribble(
+    ~lrt_name, ~parent, ~level, ~contrast_set,
+    "node2", "all", 2, "contrast2",
+    "all", NA, 1, "contrast2;contrast1"
+  )
+  expected <- tibble::tibble(
+    lrt_name = c("all", "node2"),
+    parent = c(NA, "all"),
+    level = c(1, 2),
+    contrast_set = list(c("contrast2", "contrast1"), c("contrast2")),
+    n_siblings = c(1, 1)
+  )
+  expect_equal_tbl(
+    parse_lrt_table(table),
+    expected,
+    info = paste(
+      "in the data-frame returned by parse_lrt_table, the rows are ordered by",
+      "increasing 'level' so that parent-nodes occur before their children"
+    )
+  )
+})
+
 test_that("inappropriate args for parse_lrt_table", {
   table <- tibble::tibble(
     lrt_name = "all", parent = NA, level = 1,
