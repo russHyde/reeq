@@ -44,5 +44,6 @@ Collate:
     'logfile_helpers.R'
     'logfile_cutadapt_io.R'
     'logfile_hisat2_io.R'
+    'lrt_contrast_set_io.R'
     'sig_test_summary-class.R'
     'sig_test_summary-methods.R'
