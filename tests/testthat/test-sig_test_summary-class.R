@@ -1,28 +1,5 @@
 context("Tests for hypothesis-test functions")
 
-expect_equal_dgelrt <- function(object,
-                                expected,
-                                tolerance = 1e-8,
-                                info = NULL) {
-  # capture object and it's label
-  act <- testthat::quasi_label(rlang::enquo(object), arg = "object")
-
-  # call expect
-  ns <- union(names(object), names(expected))
-  for (n in ns) {
-    testthat::expect(
-      n %in% names(object) &&
-        all.equal(object[[n]], expected[[n]], tolerance = tolerance),
-      failure_message = paste0(
-        "Failed on ", n
-      ),
-      info = info
-    )
-  }
-
-  invisible(act$val)
-}
-
 test_that("significance summary for an edgeR dataset", {
   n_genes <- 100
   n_samples <- 6
