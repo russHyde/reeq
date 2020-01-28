@@ -62,4 +62,25 @@ expect_equal_dgelrt <- function(object,
 
   invisible(act$val)
 }
+
+###############################################################################
+
+expect_equal_tbl <- function(object, expected, ..., info = NULL) {
+  act <- testthat::quasi_label(rlang::enquo(object), arg = "object")
+  exp <- testthat::quasi_label(rlang::enquo(expected), arg = "expected")
+
+  diffs <- all.equal.list(object, expected, ...)
+  has_diff <- if (is.logical(diffs)) diffs else FALSE
+  diff_msg <- paste(diffs, collapse = "\n")
+  testthat::expect(
+    has_diff,
+    failure_message = sprintf(
+      "%s not equal to %s.\n%s", act$lab, exp$lab, diff_msg
+    ),
+    info = info
+  )
+
+  invisible(act$val)
+}
+
 ###############################################################################
