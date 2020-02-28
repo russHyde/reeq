@@ -7,15 +7,16 @@
 parse_lrt_table(x)
 }
 \arguments{
-\item{x}{A data-frame containing columns "lrt_name", "level", "parent",
-"contrast_set". The `contrast_set` column must be a vector of
-';'-separated characters}
+\item{x}{A data-frame containing (at least) columns "lrt_name", "level",
+"parent", "contrast_set". The `contrast_set` column must be a vector of
+';'-separated characters or a list of character-vectors.}
 }
 \description{
 Each likelihood-ratio test is performed over a set of contrasts. This
 function extracts the names of the contrasts over which each LRT should be
 performed from a data.frame. The collection of contrasts should be defined
-as a ';'-separated string in the input data.frame.
+as a ';'-separated string (or list of character-vectors) in the input
+data.frame.
 }
 \details{
 A tibble where the contrast sets are present in a list-column is returned.

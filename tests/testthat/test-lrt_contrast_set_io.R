@@ -124,6 +124,57 @@ test_that(
   }
 )
 
+test_that("User can parse an LRT table with contrast-collections as a list", {
+  table <- tibble::tibble(
+    lrt_name = c("drug1", "drug2"),
+    parent = NA,
+    level = 1,
+    contrast_set = list("treatment1", "treatment2")
+  )
+  expected <- dplyr::mutate(table, n_siblings = 2)
+  expect_equal_tbl(
+    parse_lrt_table(table),
+    expected,
+    info = paste(
+      "two contrast collections, passed as a list (with single entries)"
+    )
+  )
+
+  table <- tibble::tibble(
+    lrt_name = c("drug1", "drug2"),
+    parent = NA,
+    level = 1,
+    contrast_set = list(
+      c("treatment1", "treatment3"), c("treatment2", "treatment4")
+    )
+  )
+  expected <- dplyr::mutate(table, n_siblings = 2)
+  expect_equal_tbl(
+    parse_lrt_table(table),
+    expected,
+    info = paste(
+      "two contrast collections, passed as a list (with multiple entries)"
+    )
+  )
+})
+
+test_that("parse_lrt_table should be idempotent", {
+  # That is, running parse_lrt_table on a table once should give the same
+  # result as if you ran it multiple times
+
+  table <- tibble::tibble(
+    lrt_name = c("drug1", "drug2"),
+    parent = NA,
+    level = 1,
+    contrast_set = list("treatment1", "treatment2")
+  )
+  expect_equal_tbl(
+    parse_lrt_table(parse_lrt_table(table)),
+    parse_lrt_table(table),
+    info = "parse_lrt_table should be idempotent"
+  )
+})
+
 test_that("parents come before children in the output dataframe", {
   table <- tibble::tribble(
     ~lrt_name, ~parent, ~level, ~contrast_set,
@@ -162,13 +213,23 @@ test_that("inappropriate args for parse_lrt_table", {
     )
   }
 
-  # contrast set should be a vector of semi-colon separated strings
+  # contrast set should be a vector of semi-colon separated strings or a list
+  # of character-vectors
   table <- tibble::tibble(
     lrt_name = "all", parent = NA, level = 1,
     contrast_set = 123
   )
   expect_error(
     parse_lrt_table(table),
-    info = "contrast_set should be a character vector"
+    info = "contrast_set should be a character vector (or list thereof)"
+  )
+
+  table <- tibble::tibble(
+    lrt_name = letters[1:3], parent = c(NA, "a", "a"), level = c(1, 2, 2),
+    contrast_set = list(123, "x", factor("a"))
+  )
+  expect_error(
+    parse_lrt_table(table),
+    info = "if contrast_set is a list, each entry should be a character-vector"
   )
 })
