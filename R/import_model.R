@@ -49,3 +49,44 @@ import_design <- function(filepath, dge) {
 
   design
 }
+
+###############################################################################
+
+#' Import a contrasts matrix from a tab-separated file
+#'
+#' The `.tsv` file should contain two columns `contrast_name` and
+#' `contrast_definition`. Contrast definitions should be in string form, eg,
+#' "(group2 - group1)/2", where each word in the string should correspond to a
+#' column in the `design` matrix.
+#'
+#' Comment lines may begin with "#" in the .tsv
+#'
+#' @param   filepath           a tab-separated file that defines the contrasts
+#'   for the current experiment.
+#' @param   design             a design matrix. All design coefficients that
+#'   are used in defining contrasts should be column-names in this matrix.
+#'
+#' @include   define_contrasts.R
+#'
+#' @importFrom   readr   read_tsv   stop_for_problems
+#'
+#' @export
+
+import_contrasts <- function(filepath, design) {
+  stopifnot(file.exists(filepath))
+
+  contrasts_df <- readr::read_tsv(
+    filepath,
+    col_types = "cc", comment = "#"
+  )
+  readr::stop_for_problems(contrasts_df)
+
+  stopifnot("contrast_name" %in% colnames(contrasts_df))
+  stopifnot("contrast_definition" %in% colnames(contrasts_df))
+
+  define_contrasts(
+    .contrasts = contrasts_df[["contrast_definition"]],
+    .names = contrasts_df[["contrast_name"]],
+    levels = design
+  )
+}
