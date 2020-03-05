@@ -82,4 +82,36 @@ test_that("a design matrix can be imported from .tsv", {
 
 test_that("a contrast matrix can be imported from a .tsv", {
 
+  contrasts_file <- file.path("model_tables", "contrasts.tsv")
+
+  treatments <- rep(letters[1:3], each = 4)
+  design <- model.matrix(~ treatments) %>%
+    magrittr::set_colnames(c("intercept", "b", "c"))
+
+  expect_equal(
+    import_contrasts(contrasts_file, design),
+    matrix(
+      c(0, 1, 0, 0, -1, 1),
+      nrow = 3,
+      dimnames = list(c("intercept", "b", "c"), c("b_vs_a", "c_vs_b"))
+    ),
+    info = "contrasts-matrix can be read from a .tsv"
+  )
+
+  expect_error(
+    import_contrasts("NOT-A-FILE", design),
+    info = "contrasts file should exist"
+  )
+
+  expect_error(
+    import_contrasts(contrasts_file),
+    info = "design must be defined in import_contrasts()"
+  )
+
+  expect_error(
+    import_contrasts(
+      contrasts_file, magrittr::set_colnames(design, letters[26:24])
+    ),
+    info = "model coefficient names should match between contrasts and design"
+  )
 })
