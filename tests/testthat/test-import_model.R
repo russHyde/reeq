@@ -18,7 +18,7 @@ test_that("a design matrix can be imported from .tsv", {
   # - .tsv file must exist
   # - DGEList may be provided, and it is:
   #   - it should have sample IDs
-  #   - rownames of the design should match the samples in the DGEList
+  #   - rownames of the design should be a subset of the samples in the DGEList
 
   # happy path:
   # - sample IDs ("s1", "s2") are present in the DGEList
@@ -44,25 +44,25 @@ test_that("a design matrix can be imported from .tsv", {
   )
 
   expect_equivalent(
-    import_design(design_file, dge = my_dge[, 2:1]),
-    expected_design[2:1, ],
-    info = paste(
-      "samples in the design will be reordered to match that in the DGEList"
-    )
-  )
-
-  expect_equivalent(
-    import_design(file.path("model_tables", "design.tsv")),
+    import_design(design_file),
     expected_design,
     info = "when no DGEList is provided, just import the design matrix"
   )
 
   expect_error(
     import_design(
-      file.path("model_tables", "design.tsv"),
-      dge = magrittr::set_colnames(dge, c("X", "Y"))
+      design_file, dge = magrittr::set_colnames(my_dge, c("X", "Y"))
     ),
-    info = "sample IDs of imported design should match DGEList"
+    info = "sample IDs of the design should overlap with those in DGEList"
+  )
+
+  expect_equal(
+    import_design(design_file, my_dge),
+    import_design(design_file, my_dge[, rev(colnames(my_dge))]),
+    info = paste(
+      "the sample-order in the design matrix is determined by the file, not",
+      "the DGEList"
+    )
   )
 
   expect_error(
@@ -73,7 +73,7 @@ test_that("a design matrix can be imported from .tsv", {
   # sample names are correct, but class should be DGEList
   df <- data.frame(s1 = 1, s2 = 2)
   expect_error(
-    import_design(file.path("model_tables", "design.tsv"), dge = df),
+    import_design(design_file, dge = df),
     info = "if `dge` is provided, it should be a DGEList"
   )
 })

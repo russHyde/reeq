@@ -1,8 +1,11 @@
 #' Obtain a design matrix from a file.
 #'
 #' Ensures that the samples mentioned in the rows of the design matrix are all
-#' present in an expression dataset (if provided) and reorders the rows of the
-#' design to make this happen.
+#' present in an expression dataset (if provided).
+#'
+#' But note, the user should ensure that the DGEList is subset / reordered if
+#' the samples in the DGEList is a superset (or unmatching order) or those in
+#' the returned design matrix.
 #'
 #' Here, we assume that the first column in the `.tsv` contains the sample
 #' identifers, as used throughout the _R_ workflow. Each entry in that column
@@ -16,11 +19,12 @@
 #' @param        dge           A DGEList containing the expression data for the
 #'   current experiment. This is optional. But providing a DGEList helps sanity
 #'   check the design matrix - ensuring the samples in the design are all
-#'   present in the correct order etc.
+#'   present in the DGEList.
 #'
 #' @importFrom   readr         read_tsv   cols   stop_for_problems
 #' @importFrom   magrittr      set_rownames
 #' @importFrom   methods       is
+#' @importClassesFrom   edgeR   DGEList
 #'
 #' @export
 
@@ -44,7 +48,6 @@ import_design <- function(filepath, dge) {
   if (!missing(dge)) {
     stopifnot(methods::is(dge, "DGEList"))
     stopifnot(all(rownames(design) %in% colnames(dge)))
-    design <- design[colnames(dge), ]
   }
 
   design

@@ -14,14 +14,17 @@ file does not exist.}
 \item{dge}{A DGEList containing the expression data for the
 current experiment. This is optional. But providing a DGEList helps sanity
 check the design matrix - ensuring the samples in the design are all
-present in the correct order etc.}
+present in the DGEList.}
 }
 \description{
 Ensures that the samples mentioned in the rows of the design matrix are all
-present in an expression dataset (if provided) and reorders the rows of the
-design to make this happen.
+present in an expression dataset (if provided).
 }
 \details{
+But note, the user should ensure that the DGEList is subset / reordered if
+the samples in the DGEList is a superset (or unmatching order) or those in
+the returned design matrix.
+
 Here, we assume that the first column in the `.tsv` contains the sample
 identifers, as used throughout the _R_ workflow. Each entry in that column
 should be a single string that can directly be used as a column name.
