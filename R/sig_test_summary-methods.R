@@ -67,3 +67,36 @@ export.sig_test_summary <- function(x,
   readr::write_tsv(tt_data, tt_path)
   write(gene_data, gene_path, ncolumns = 1)
 }
+
+###############################################################################
+
+#' Extract the features (genes) from an object
+#'
+#' @param   x     Some object. Typically a sig_test_summary
+#' @param   ...   Further arguments. Currently unused.
+#' @export
+
+get_features <- function(x, ...) {
+  UseMethod("get_features")
+}
+
+#' Default function for extracting features
+#'
+#' @inheritParams   get_features
+#' @noRd
+#' @export
+
+get_features.default <- function(x, ...) {
+  stop("`get_features` is not implemented for class: ", class(x))
+}
+
+#' Extract the features from a sig_test_summary
+#'
+#' @inheritParams   get_features
+#' @export
+
+get_features.sig_test_summary <- function(x, ...) {
+  x[["features"]]
+}
+
+###############################################################################

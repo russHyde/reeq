@@ -24,6 +24,22 @@ get_sig_features <- function(lrt, p_threshold) {
   rownames(lrt)[rows]
 }
 
+#' as_sig_test_summary
+#'
+#' @param   x   A list
+
+as_sig_test_summary <- function(x) {
+  stopifnot(is.list(x))
+  reqd_entries <- c(
+    "features", "sig_features", "lrt", "top_table", "num_features",
+    "num_sig_features", "p_threshold"
+  )
+  stopifnot(all(reqd_entries %in% names(x)))
+
+  class(x) <- "sig_test_summary"
+  x
+}
+
 #' get_sig_test_summary
 #'
 #' @param        fit           A DGEGLM from a edgeR model fit.
@@ -46,7 +62,7 @@ get_sig_test_summary <- function(fit,
   sig_features <- get_sig_features(lrt, p_threshold)
   top_table <- edgeR::topTags(lrt, n = Inf)
 
-  structure(
+  as_sig_test_summary(
     list(
       features = testable_features,
       sig_features = sig_features,
@@ -55,7 +71,6 @@ get_sig_test_summary <- function(fit,
       num_features = length(testable_features),
       num_sig_features = length(sig_features),
       p_threshold = p_threshold
-    ),
-    class = "sig_test_summary"
+    )
   )
 }

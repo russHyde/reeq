@@ -17,15 +17,16 @@ test_that("export - creates the expected files", {
   # `export.sig_test_summary` requires that `p_threshold`, `sig_features` and
   #   `top_table` are present in the `sig_test_summary` that is passed in.
 
-  input <- structure(
+  input <- as_sig_test_summary(
     list(
       # 4 significant digits of the p-threshold are present in the output
       #   "significant features" file
       p_threshold = 0.001111,
       top_table = data.frame(x = 1:3, y = 4:6, row.names = LETTERS[1:3]),
-      sig_features = "A"
-    ),
-    class = "sig_test_summary"
+      sig_features = "A",
+      num_sig_features = 1,
+      features = NULL, num_features = NULL, lrt = NULL
+    )
   )
 
   out_dir <- file.path(tempdir(), "export1")
@@ -59,3 +60,31 @@ test_that("export - creates the expected files", {
     info = "contents of significant-features file should match the input"
   )
 })
+
+###############################################################################
+
+test_that("extract the features from a `sig_test_summary`", {
+  test_features <- letters
+  test_input <- as_sig_test_summary(
+    list(
+      features = test_features, num_features = length(test_features),
+      sig_features = NULL, lrt = NULL, top_table = NULL,
+      num_sig_features = NULL, p_threshold = NULL
+    )
+  )
+  expect_is(
+    test_input, "sig_test_summary"
+  )
+  expect_equal(
+    object = get_features(test_input),
+    expected = test_features,
+    info = "`get_features` method on a `sig_test_summary` object"
+  )
+
+  expect_error(
+    get_features("Not a `sig_test_summary`"),
+    info = "`reeq::get_features` is only implemented for `sig_test_summary`"
+  )
+})
+
+###############################################################################
